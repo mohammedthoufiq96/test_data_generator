@@ -32,6 +32,7 @@ async def read_item(body: BodyRequest):
     headers_input = body.columns
     count=body.count
     tablename=body.tablename
+    generated_csv_content = [",".join(headers_input)]
     with open(tablename+'.csv', 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(headers_input)
@@ -60,17 +61,18 @@ async def read_item(body: BodyRequest):
             # email = fake.email()
             # phone = fake.phone_number()
             # address = fake.address()
-            csvwriter.writerow(generated_data)
-
+            
+            generated_csv_content.append(",".join(generated_data))
+            # csvwriter.writerow(generated_data)
+        csv_content = "\n".join(generated_csv_content)
+        print(csv_content)
         row = generated_data
-        # print(row)
         # csvwriter.writerow(row)
-        script_path = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(script_path, tablename+'.csv')
-        link = f'<a href="{file_path}">Click here to access the file</a>'
+        # script_path = os.path.dirname(os.path.abspath(__file__))
+        # file_path = os.path.join(script_path, tablename+'.csv')
+        # link = f'<a href="{file_path}">Click here to access the file</a>'
 
-        return ("file_path: "+f'<a href="{file_path}">Click here to access the file</a>'
-)
+        return (csv_content)
     
 
 
