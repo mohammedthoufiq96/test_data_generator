@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from fuzzywuzzy import process
 import os
+from fastapi.responses import FileResponse
 
 
 app = FastAPI()
@@ -63,16 +64,16 @@ async def read_item(body: BodyRequest):
             # address = fake.address()
             
             generated_csv_content.append(",".join(generated_data))
-            # csvwriter.writerow(generated_data)
+            csvwriter.writerow(generated_data)
         csv_content = "\n".join(generated_csv_content)
         print(csv_content)
         row = generated_data
-        # csvwriter.writerow(row)
-        # script_path = os.path.dirname(os.path.abspath(__file__))
-        # file_path = os.path.join(script_path, tablename+'.csv')
+        csvwriter.writerow(row)
+        script_path = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_path, tablename+'.csv')
         # link = f'<a href="{file_path}">Click here to access the file</a>'
 
-        return (csv_content)
+        return "Sucess: "+file_path
     
 
 
@@ -125,4 +126,10 @@ def generate_custom_phone_number():
     # return phone_number 
     # formatted_phone_number = re.sub(r'(\d{1})(\d{2})(\d{3})(\d{3})', r'9\1\2-\3-\4', phone_number)
     # return formatted_phone_number
+
+
+@app.get("/download_file")
+async def download_file():
+    file_path = "\test_data_generator\newtesttable.csv"
+    return FileResponse(file_path, headers={"Content-Disposition": "attachment; filename=myfile.txt"})
 
