@@ -42,7 +42,7 @@ async def read_item(body: BodyRequest):
         for _ in range(count):
             generated_data=[]
             for head in headers_input:
-                if(head=="mobilenumber"):
+                if(head=="mobilenumber" or head.__contains__("mobile") or head.__contains__("mob")):
                     head="phonenumber"
                 closest_match, score = process.extractOne(head, dir(fake))
                 print(closest_match)
@@ -65,12 +65,12 @@ async def read_item(body: BodyRequest):
             # phone = fake.phone_number()
             # address = fake.address()
             
-            generated_csv_content.append(",".join(generated_data))
+            # generated_csv_content.append(",".join(generated_data))
             csvwriter.writerow(generated_data)
-        csv_content = "\n".join(generated_csv_content)
-        print(csv_content)
+        # csv_content = "\n".join(generated_csv_content)
+        # print(csv_content)
         row = generated_data
-        csvwriter.writerow(row)
+        # csvwriter.writerow(row)
         script_path = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_path, tablename+'.csv')
         # link = f'<a href="{file_path}">Click here to access the file</a>'
