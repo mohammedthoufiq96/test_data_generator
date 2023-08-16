@@ -130,7 +130,7 @@ def generate_custom_phone_number():
 
 @app.get("/download_file")
 async def download_file():
-    file_path = "/opt/render/project/src/newtesttable.csv"
+    file_path = file_path
     csv_file_path_url = file_path.replace("\\", "/")
     base_url = "https://test-data-generator-u9tl.onrender.com"
     # csv_url = f"{base_url}/download/{csv_file_path_url}"
