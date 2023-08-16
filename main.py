@@ -73,7 +73,7 @@ async def read_item(body: BodyRequest):
         file_path = os.path.join(script_path, tablename+'.csv')
         # link = f'<a href="{file_path}">Click here to access the file</a>'
 
-        return "Sucess: "+file_path
+        return file_path
     
 
 
