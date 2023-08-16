@@ -33,6 +33,7 @@ async def read_item(body: BodyRequest):
     headers_input = body.columns
     count=body.count
     tablename=body.tablename
+    tablename=check_word_count(tablename)
     generated_csv_content = [",".join(headers_input)]
     with open(tablename+'.csv', 'w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile)
@@ -152,4 +153,11 @@ async def get_csv_link():
     download_link = f'<a href="/download-csv">Download CSV File</a>'
 
     return f"<html><body>{download_link}</body></html>"
+
+def check_word_count(input_string):
+    if " " in input_string:
+        one_string = input_string.replace(" ", "")
+        return one_string
+    else:
+        return input_string
 
