@@ -134,6 +134,7 @@ async def download_file():
     csv_file_path_url = file_path.replace("\\", "/")
     base_url = "https://test-data-generator-u9tl.onrender.com"
     # csv_url = f"{base_url}/download/{csv_file_path_url}"
+    print(os.path.basename(csv_file_path_url))
     return FileResponse(file_path, headers={"Content-Disposition": f"attachment; filename={os.path.basename(csv_file_path_url)}"})
 
     # return {"csv_url": csv_url}
