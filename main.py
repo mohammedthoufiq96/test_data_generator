@@ -130,6 +130,6 @@ def generate_custom_phone_number():
 
 @app.get("/download_file")
 async def download_file():
-    file_path = "\test_data_generator\newtesttable.csv"
-    return FileResponse(file_path, headers={"Content-Disposition": "attachment; filename=myfile.txt"})
+    file_path = "/opt/render/project/src/newtesttable.csv"
+    return FileResponse(file_path, headers={"Content-Disposition": "attachment; filename=newtesttable.csv"})
 
