@@ -140,3 +140,14 @@ async def download_file():
     # return {"csv_url": csv_url}
     # return FileResponse(file_path, headers={"Content-Disposition": "attachment; filename=newtesttable.csv"})
 
+
+@app.get("/get-csv-link", response_class=HTMLResponse)
+async def get_csv_link():
+    # Path to the CSV file
+    csv_file_path = "/opt/render/project/src/newtesttable.csv"
+
+    # Generate the download link
+    download_link = f'<a href="/download-csv">Download CSV File</a>'
+
+    return f"<html><body>{download_link}</body></html>"
+
