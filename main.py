@@ -20,7 +20,7 @@ num_rows = 5
 
 # Define the column headers
 
-
+tablename=""
 class BodyRequest(BaseModel):
     tablename:str
     columns: list
@@ -129,8 +129,10 @@ def generate_custom_phone_number():
 
 
 @app.get("/download_file")
-async def download_file(filepath: str):
+async def download_file(filepath:str):
+    print("table_name:"+filepath)
     file_path = filepath
+    print(file_path)
     csv_file_path_url = file_path.replace("\\", "/")
     base_url = "https://test-data-generator-u9tl.onrender.com"
     # csv_url = f"{base_url}/download/{csv_file_path_url}"
