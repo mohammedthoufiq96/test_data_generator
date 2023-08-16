@@ -54,7 +54,8 @@ async def read_item(body: BodyRequest):
                         print(num)
                         generated_data.append(num)
                     else:
-                        generated_data.append(f"'{faker_function()}'")
+                        # generated_data.append(f"'{faker_function()}'")
+                        generated_data.append(faker_function())
                 # print(generated_data)
                 else:
                     generated_data.append("")
