@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from fuzzywuzzy import process
 import os
 from fastapi.responses import FileResponse
+# import test_governance
 
 
 app = FastAPI()
@@ -161,4 +162,30 @@ def check_word_count(input_string):
         return one_string
     else:
         return input_string
+    
+
+
+@app.get("/extractdata/")
+async def extract_data(bot_input:str):
+    document_links={
+        "Test Team Onboarding Checklist from Azure can be found":"https://tinyurl.com/testteamchecklist",
+        "The Test Strategy document for LDS from Azure can be found":"https://tinyurl.com/teststrategydocLDS",
+        "The Master Test plan document for LDS from Azure can be found":"https://tinyurl.com/masterplanLDS",
+        "The test automation best practice document for LDS from Azure can be found ":"https://tinyurl.com/testauLDS",
+        "Master Test plan doc for LDS link from SharePoint is ":"https://tinyurl.com/MastertestplanLDS",
+        "Test Strategy document for LDS link from SharePoint is":"https://tinyurl.com/teststrategyLDS",
+        "Test automation best practice document for LDS link from SharePoint is":"https://tinyurl.com/testautoLDS",
+        "Test team onboarding checklist document link from SharePoint is" :"https://tinyurl.com/testteamonboarding",
+        "This is the SharePoint link for all documents ":"https://tinyurl.com/alldocssharepoint"
+    }
+    matching_links = []
+
+    for key in document_links:
+        if bot_input.lower() in key.lower():
+            matching_links.append(document_links[key])
+    
+    if matching_links:
+        return matching_links
+    else:
+        return "No matching document links found."
 
