@@ -26,7 +26,7 @@ class BodyRequest(BaseModel):
     tablename:str
     columns: list
     count:int
-    columnswithdatabase:list
+    # columnswithdatabase:list
 # Generate and write data to CSV
 @app.post("/generatedata/",response_class=HTMLResponse)
 async def read_item(body: BodyRequest):
