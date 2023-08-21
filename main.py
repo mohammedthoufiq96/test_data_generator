@@ -1,5 +1,4 @@
 import re
-import sqlite3
 from fastapi import FastAPI, Depends, HTTPException, status
 import csv
 from faker import Faker
@@ -8,7 +7,8 @@ from pydantic import BaseModel
 from fuzzywuzzy import process
 import os
 from fastapi.responses import FileResponse
-# import test_governance
+import mysql.connector
+from mysql.connector import Error
 
 
 app = FastAPI()
@@ -26,6 +26,7 @@ class BodyRequest(BaseModel):
     tablename:str
     columns: list
     count:int
+    columnswithdatabase:list
 # Generate and write data to CSV
 @app.post("/generatedata/",response_class=HTMLResponse)
 async def read_item(body: BodyRequest):
@@ -60,21 +61,11 @@ async def read_item(body: BodyRequest):
                 # print(generated_data)
                 else:
                     generated_data.append("")
-
-            # name = fake.first_name
-            # email = fake.email()
-            # phone = fake.phone_number()
-            # address = fake.address()
             
-            # generated_csv_content.append(",".join(generated_data))
             csvwriter.writerow(generated_data)
-        # csv_content = "\n".join(generated_csv_content)
-        # print(csv_content)
         row = generated_data
-        # csvwriter.writerow(row)
         script_path = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_path, tablename+'.csv')
-        # link = f'<a href="{file_path}">Click here to access the file</a>'
 
         return file_path
     
@@ -83,42 +74,42 @@ async def read_item(body: BodyRequest):
     
 
 
-@app.post("/generatedatatest/")
-async def read_item(body: BodyRequest):
-    headers_input = body.columns
-    count = body.count
-    tablename = body.tablename
+# @app.post("/generatedatatest/")
+# async def read_item(body: BodyRequest):
+#     headers_input = body.columns
+#     count = body.count
+#     tablename = body.tablename
 
-    # Connect to the SQLite database
-    db_path = os.path.join(os.path.dirname(__file__), "data.db")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+#     # Connect to the SQLite database
+#     db_path = os.path.join(os.path.dirname(__file__), "data.db")
+#     conn = sqlite3.connect(db_path)
+#     cursor = conn.cursor()
 
-    # Create table
-    create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(headers_input)})"
-    cursor.execute(create_table_query)
-    conn.commit()
+#     # Create table
+#     create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(headers_input)})"
+#     cursor.execute(create_table_query)
+#     conn.commit()
 
-    # Insert data into table
-    for _ in range(count):
-        generated_data = []
-        for head in headers_input:
-            if head == "mobilenumber":
-                head = "phonenumber"
-            closest_match, score = process.extractOne(head, dir(fake))
-            if hasattr(fake, closest_match):
-                faker_function = getattr(fake, closest_match)
-                generated_data.append(f"'{faker_function()}'")
-            else:
-                generated_data.append("''")
+#     # Insert data into table
+#     for _ in range(count):
+#         generated_data = []
+#         for head in headers_input:
+#             if head == "mobilenumber":
+#                 head = "phonenumber"
+#             closest_match, score = process.extractOne(head, dir(fake))
+#             if hasattr(fake, closest_match):
+#                 faker_function = getattr(fake, closest_match)
+#                 generated_data.append(f"'{faker_function()}'")
+#             else:
+#                 generated_data.append("''")
 
-        insert_query = f"INSERT INTO {tablename} VALUES ({', '.join(generated_data)})"
-        cursor.execute(insert_query)
-        conn.commit()
+#         insert_query = f"INSERT INTO {tablename} VALUES ({', '.join(generated_data)})"
+#         cursor.execute(insert_query)
+#         conn.commit()
 
-    conn.close()
+#     conn.close()
 
-    return {"message": "Data inserted into SQLite database"}
+    # return {"message": "Data inserted into SQLite database"}
 
 
 
@@ -188,4 +179,87 @@ async def extract_data(bot_input:str):
         return matching_links
     else:
         return "No matching document links found."
+    
 
+# @app.get("/testdata/")
+# async def startup():
+#     if conn.is_closed():
+#         conn.connect()
+
+class BodyRequest(BaseModel):
+    columns: list
+    columnswithdatabase:list
+    count: int
+    tablename: str
+
+@app.post("/generatedatatest/")
+async def read_item(body: BodyRequest):
+    headers_input = body.columns
+    column_name=body.columnswithdatabase
+    count = body.count
+    tablename = body.tablename
+    tablename=check_word_count(tablename)
+    connection=None
+    # Connect to MySQL database
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="Test@123",
+            database="test_data"
+        )
+        print(connection)
+        if connection.is_connected():
+            cursor = connection.cursor()
+            create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(column_name)})"
+            print(create_table_query)
+            cursor.execute(create_table_query)
+            connection.commit()
+            print("cursor")
+        else:
+            print("not connected")
+
+    #     print("create table")
+    #     create_table_query = """
+    # CREATE TABLE IF NOT EXISTS employees (
+    #     id INT AUTO_INCREMENT PRIMARY KEY,
+    #     first_name VARCHAR(255),
+    #     last_name VARCHAR(255),
+    #     email VARCHAR(255)
+    # )
+    # """
+        print("creating table")
+        cursor.execute(create_table_query)
+        connection.commit()
+        print("table created Successfully")
+            # Insert data into table
+        if connection.is_connected():
+            cursor = connection.cursor()
+            for _ in range(count):
+                generated_data = []
+                for head in headers_input:
+                    if(head=="mobilenumber" or head.__contains__("mobile") or head.__contains__("mob")):
+                        head = "phonenumber"
+                    closest_match, score = process.extractOne(head, dir(fake))
+                    if hasattr(fake, closest_match):
+                        faker_function = getattr(fake, closest_match)
+                        generated_data.append(f"'{faker_function()}'")
+                    else:
+                        generated_data.append("''")
+                print(generated_data)
+
+                insert_query = f"INSERT INTO {tablename} VALUES ({', '.join(generated_data)})"
+                cursor.execute(insert_query)
+                print("inserted")
+                connection.commit()
+
+            cursor.close()
+
+    except Error as e:
+        print("Error:", e)
+
+    finally:
+        if connection.is_connected():
+            connection.close()
+
+    return {"message": "Data inserted into MySQL database"}
