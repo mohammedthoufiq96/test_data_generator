@@ -2,3 +2,4 @@ fastapi
 faker
 fuzzywuzzy
 uvicorn
+mysql-connector-python
