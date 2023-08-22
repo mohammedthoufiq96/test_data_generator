@@ -203,10 +203,10 @@ async def read_item(body: BodyRequest):
     # Connect to MySQL database
     try:
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="Test@123",
-            database="test_data"
+            host="ec2-3-6-90-112.ap-south-1.compute.amazonaws.com",
+            user="jagan",
+            password="Jagan@1997",
+            database="test_data_generation"
         )
         print(connection)
         if connection.is_connected():
