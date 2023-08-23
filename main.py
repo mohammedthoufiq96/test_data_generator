@@ -26,6 +26,7 @@ class BodyRequest(BaseModel):
     tablename:str
     columns: list
     count:int
+    filetype:str
     # columnswithdatabase:list
 # Generate and write data to CSV
 @app.post("/generatedata/",response_class=HTMLResponse)
@@ -37,9 +38,28 @@ async def read_item(body: BodyRequest):
     tablename=body.tablename
     tablename=check_word_count(tablename)
     generated_csv_content = [",".join(headers_input)]
-    with open(tablename+'.csv', 'w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(headers_input)
+    # with open(tablename+'.csv', 'w', newline='') as csvfile:
+    #     csvwriter = csv.writer(csvfile)
+    #     csvwriter.writerow(headers_input)
+
+    filename = tablename + '.'+body.filetype # Change the extension based on your desired file format
+    data = headers_input  # Data you want to write
+
+    with open(filename, 'w', newline='') as file:
+        if filename.endswith('.csv'):
+            import csv
+            csvwriter = csv.writer(file)
+            csvwriter.writerow(data)
+        elif filename.endswith('.txt'):
+        # For plain text files, you can simply write the data directly
+            file.write('\t'.join(data))  # Example: Tab-separated values
+        elif filename.endswith('.json'):
+            import json
+            json.dump(data, file)
+    # Add more conditions for other file formats as needed
+        else:
+            raise ValueError(f"Unsupported file format: {filename}")
+
         
         for _ in range(count):
             generated_data=[]
@@ -61,11 +81,16 @@ async def read_item(body: BodyRequest):
                 # print(generated_data)
                 else:
                     generated_data.append("")
-            
-            csvwriter.writerow(generated_data)
+            if filename.endswith('.csv'):
+                csvwriter.writerow(generated_data)
+            elif filename.endswith('.txt'):
+                file.write('\t'.join(generated_data))
+            elif filename.endswith('.json'):
+                  json.dump(generated_data, file)
+
         row = generated_data
         script_path = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(script_path, tablename+'.csv')
+        file_path = os.path.join(script_path, filename)
 
         return file_path
     
