@@ -9,6 +9,7 @@ import os
 from fastapi.responses import FileResponse
 import mysql.connector
 from mysql.connector import Error
+import csv
 
 
 app = FastAPI()
@@ -45,26 +46,32 @@ async def read_item(body: BodyRequest):
     #     csvwriter = csv.writer(csvfile)
     #     csvwriter.writerow(headers_input)
 
-    filename = tablename + '.'+body.filetype # Change the extension based on your desired file format
+    filename = tablename + '.'+body.filetype.lower() # Change the extension based on your desired file format
     data = headers_input  # Data you want to write
-
+    print(data)
     with open(filename, 'w', newline='') as file:
         if filename.endswith('.csv'):
             import csv
             csvwriter = csv.writer(file)
             csvwriter.writerow(data)
         elif filename.endswith('.txt'):
+            import csv
             if(textformat.lower().__contains__("csv")):
-                 csv_writer = csv.writer(filename)
-                 csv_writer.writerows(data)
+                 csv_writer = csv.writer(file)
+                 csv_writer.writerow(data)
             elif textformat.lower().__contains__("tsv"):
-                tsv_writer = csv.writer(filename, delimiter='\t')
-                tsv_writer.writerows(data)   
+                file.write('\t'.join(map(str, data)) + '\n')
 
         # For plain text files, you can simply write the data directly
             # file.write('\t'.join(data))  # Example: Tab-separated values
         elif filename.endswith('.json'):
             import json
+            # json_data = [{data: row[i] for i in range(len(data))}
+            # for row in data[1:]
+            # ]
+            # json_string = json.dumps(json_data, indent=2)
+            # file.write(json_string)
+
             json.dump(data, file)
     # Add more conditions for other file formats as needed
         else:
@@ -77,13 +84,13 @@ async def read_item(body: BodyRequest):
                 if(head=="mobilenumber" or head.__contains__("mobile") or head.__contains__("mob")):
                     head="phonenumber"
                 closest_match, score = process.extractOne(head, dir(fake))
-                print(closest_match)
-                print(type(closest_match))
+                # print(closest_match)
+                # print(type(closest_match))
                 if hasattr(fake, closest_match):
                     faker_function = getattr(fake, closest_match)
                     if head=="phonenumber":
                         num=generate_custom_phone_number()
-                        print(num)
+                        # print(num)
                         generated_data.append(num)
                     else:
                         # generated_data.append(f"'{faker_function()}'")
@@ -91,20 +98,33 @@ async def read_item(body: BodyRequest):
                 # print(generated_data)
                 else:
                     generated_data.append("")
+            # print(generated_data)
+            # finaldata=headers_input.append(generated_data)
+            # print(finaldata)
+            final_data=[]
+            final_data.extend(generated_data)
             if filename.endswith('.csv'):
                 csvwriter.writerow(generated_data)
             elif filename.endswith('.txt'):
+                print("generting data")
+                print("textformat:"+textformat)
                 if(textformat.lower().__contains__("csv")):
-                 csv_writer = csv.writer(filename)
-                 csv_writer.writerows(generated_data)
-            elif textformat.lower().__contains__("tsv"):
-                tsv_writer = csv.writer(filename, delimiter='\t')
-                tsv_writer.writerows(generated_data)  
+                #  csv_writer = csv.writer(file)
+                 csv_writer.writerow(generated_data)
+                elif textformat=="tsv":
+                # tsv_writer = csv.writer(file, delimiter='\t')
+                # tsv_writer.writerows(generated_data)  
+                    print("generting data")
+                    print(generated_data)
+                    file.write('\t'.join(map(str, generated_data)) + '\n')
                 # file.write('\t'.join(generated_data))
             elif filename.endswith('.json'):
-                  json.dump(generated_data, filename)
-
+                  json.dump(generated_data, file)
+                #   data.append()
+            
+        print(final_data)
         row = generated_data
+        # print(row)
         script_path = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_path, filename)
 
