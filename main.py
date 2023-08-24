@@ -27,6 +27,7 @@ class BodyRequest(BaseModel):
     columns: list
     count:int
     filetype:str
+    textformat:str
     # columnswithdatabase:list
 # Generate and write data to CSV
 @app.post("/generatedata/",response_class=HTMLResponse)
@@ -37,6 +38,8 @@ async def read_item(body: BodyRequest):
     count=body.count
     tablename=body.tablename
     tablename=check_word_count(tablename)
+    textformat=body.textformat
+    
     generated_csv_content = [",".join(headers_input)]
     # with open(tablename+'.csv', 'w', newline='') as csvfile:
     #     csvwriter = csv.writer(csvfile)
@@ -51,8 +54,15 @@ async def read_item(body: BodyRequest):
             csvwriter = csv.writer(file)
             csvwriter.writerow(data)
         elif filename.endswith('.txt'):
+            if(textformat.lower().__contains__("csv")):
+                 csv_writer = csv.writer(filename)
+                 csv_writer.writerows(data)
+            elif textformat.lower().__contains__("tsv"):
+                tsv_writer = csv.writer(filename, delimiter='\t')
+                tsv_writer.writerows(data)   
+
         # For plain text files, you can simply write the data directly
-            file.write('\t'.join(data))  # Example: Tab-separated values
+            # file.write('\t'.join(data))  # Example: Tab-separated values
         elif filename.endswith('.json'):
             import json
             json.dump(data, file)
@@ -84,9 +94,15 @@ async def read_item(body: BodyRequest):
             if filename.endswith('.csv'):
                 csvwriter.writerow(generated_data)
             elif filename.endswith('.txt'):
-                file.write('\t'.join(generated_data))
+                if(textformat.lower().__contains__("csv")):
+                 csv_writer = csv.writer(filename)
+                 csv_writer.writerows(generated_data)
+            elif textformat.lower().__contains__("tsv"):
+                tsv_writer = csv.writer(filename, delimiter='\t')
+                tsv_writer.writerows(generated_data)  
+                # file.write('\t'.join(generated_data))
             elif filename.endswith('.json'):
-                  json.dump(generated_data, file)
+                  json.dump(generated_data, filename)
 
         row = generated_data
         script_path = os.path.dirname(os.path.abspath(__file__))
