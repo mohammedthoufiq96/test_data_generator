@@ -81,7 +81,7 @@ async def read_item(body: BodyRequest):
         for _ in range(count):
             generated_data=[]
             for head in headers_input:
-                if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob")):
+                if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or head.lower().__contains__("phone")):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
                     head="name"
