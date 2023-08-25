@@ -81,8 +81,15 @@ async def read_item(body: BodyRequest):
         for _ in range(count):
             generated_data=[]
             for head in headers_input:
-                if(head=="mobilenumber" or head.__contains__("mobile") or head.__contains__("mob")):
+                if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob")):
                     head="phonenumber"
+                elif(head.lower()=="name" or head.lower().__contains__("name")):
+                    head="name"
+                elif(head.lower()=="payment_id" or head.lower()=="paymentid" or head.lower().__contains__("id")):
+                    head="uuid4"
+                elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
+                    head="date of birth"
+                
                 closest_match, score = process.extractOne(head, dir(fake))
                 # print(closest_match)
                 # print(type(closest_match))
@@ -300,18 +307,55 @@ async def read_item(body: BodyRequest):
             cursor = connection.cursor()
             for _ in range(count):
                 generated_data = []
+                column_names = []
                 for head in headers_input:
-                    if(head=="mobilenumber" or head.__contains__("mobile") or head.__contains__("mob")):
-                        head = "phonenumber"
+                    parts = head.split()
+                    print(parts)
+                    head = parts[0]
+                    column_names.append(head)
+                    datatype=parts[1]
+                    
+
+                    max_length = int(parts[1].split("(")[1].rstrip(")"))
+                    if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob")):
+                        head="phonenumber"
+                    # elif((head.lower()=="name" or head.lower().__contains__("name")) and ("first" not in head.lower() or "last" not in head.lower())):
+                    #     head="name"
+                    #     # print("name")
+                    elif(head.lower()=="payment_id" or head.lower()=="paymentid" or head.lower().__contains__("id")):
+                        head="uuid4"
+                        
+                    elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
+                        head="date of birth"
                     closest_match, score = process.extractOne(head, dir(fake))
                     if hasattr(fake, closest_match):
                         faker_function = getattr(fake, closest_match)
-                        generated_data.append(f"'{faker_function()}'")
+                        if(head=="uuid4"):
+                            generated_value=fake.random_int(min=1, max=999)
+                        else:
+                            generated_value=faker_function()
+                        # print("generated_value= "+generated_value)
+                        if("int" not in datatype.lower()):
+                            if max_length is not None and len(generated_value) > max_length:
+                                generated_value = generated_value[:max_length-1]
+                            # print("aftergeneratedvalue= "+generated_value)
+                                generated_data.append(f"'{generated_value}'")
+                            else:
+                                generated_data.append(f"'{generated_value}'")
+                        else:
+                            generated_data.append(f"'{generated_value}'")
+                            
+                        
+                        
+                        
+            
+                    # record[field_name] = generated_value
                     else:
                         generated_data.append("''")
                 print(generated_data)
-
-                insert_query = f"INSERT INTO {tablename} VALUES ({', '.join(generated_data)})"
+                columns_string = ', '.join(column_names)
+                insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES ({', '.join(generated_data)})"
+                print(insert_query)
                 cursor.execute(insert_query)
                 print("inserted")
                 connection.commit()
