@@ -72,7 +72,7 @@ async def read_item(body: BodyRequest):
             # json_string = json.dumps(json_data, indent=2)
             # file.write(json_string)
 
-            json.dump(data, file)
+            # json.dump(data, file)
     # Add more conditions for other file formats as needed
         else:
             raise ValueError(f"Unsupported file format: {filename}")
@@ -119,7 +119,9 @@ async def read_item(body: BodyRequest):
                     file.write('\t'.join(map(str, generated_data)) + '\n')
                 # file.write('\t'.join(generated_data))
             elif filename.endswith('.json'):
-                  json.dump(generated_data, file)
+                  result_dict = {key: value for key, value in zip(headers_input, generated_data)}
+
+                  json.dump(result_dict, file)
                 #   data.append()
             
         print(final_data)
