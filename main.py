@@ -1,3 +1,4 @@
+import random
 import re
 from fastapi import FastAPI, Depends, HTTPException, status
 import csv
@@ -17,8 +18,6 @@ app = FastAPI()
 # Create a Faker generator
 fake = Faker("en_GB")
 
-# Define the number of rows
-num_rows = 5
 
 # Define the column headers
 
@@ -89,6 +88,11 @@ async def read_item(body: BodyRequest):
                     head="uuid4"
                 elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                     head="date of birth"
+                elif(head.lower().__contains__('age')):
+                    head = "random"
+                    
+                elif(head.lower().__contains__('payment_mode')):
+                    head="credit_card_provider"
                 
                 closest_match, score = process.extractOne(head, dir(fake))
                 # print(closest_match)
@@ -99,8 +103,14 @@ async def read_item(body: BodyRequest):
                         num=generate_custom_phone_number()
                         # print(num)
                         generated_data.append(num)
+                    elif(head=="random"):
+                            age = random.randint(18, 80)
+                            generated_data.append(age)
+                    elif(head=="credit_card_provider"):
+                        payment_mode = fake.credit_card_provider()
+                        generated_data.append(payment_mode)
+
                     else:
-                        # generated_data.append(f"'{faker_function()}'")
                         generated_data.append(faker_function())
                 # print(generated_data)
                 else:
@@ -135,6 +145,8 @@ async def read_item(body: BodyRequest):
         row = generated_data
         # print(row)
         script_path = os.path.dirname(os.path.abspath(__file__))
+        
+        print(script_path)
         file_path = os.path.join(script_path, filename)
 
         return file_path
@@ -327,11 +339,17 @@ async def read_item(body: BodyRequest):
                         
                     elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                         head="date of birth"
+                    elif(head.lower().__contains__('age')):
+                        head = "random"
+                    elif(head.lower().__contains__('payment_mode')):
+                        head="credit_card_provider"
                     closest_match, score = process.extractOne(head, dir(fake))
                     if hasattr(fake, closest_match):
                         faker_function = getattr(fake, closest_match)
                         if(head=="uuid4"):
                             generated_value=fake.random_int(min=1, max=999)
+                        elif(head=="random"):
+                            generated_value = random.randint(18, 80)
                         else:
                             generated_value=faker_function()
                         # print("generated_value= "+generated_value)
