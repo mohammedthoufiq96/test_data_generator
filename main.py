@@ -317,7 +317,7 @@ async def read_item(body: BodyRequest):
                     
 
                     max_length = int(parts[1].split("(")[1].rstrip(")"))
-                    if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob")):
+                    if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or  head.lower().__contains__("phone")):
                         head="phonenumber"
                     # elif((head.lower()=="name" or head.lower().__contains__("name")) and ("first" not in head.lower() or "last" not in head.lower())):
                     #     head="name"
