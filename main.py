@@ -343,7 +343,11 @@ async def read_item(body: BodyRequest):
                     else:
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
                     if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or  head.lower().__contains__("phone")):
-                        head="phonenumber"
+                        if(datatype.lower().__contains__("int")):
+                            head="mobile"
+                        else:
+                            head="phonenumber"
+
                     # elif((head.lower()=="name" or head.lower().__contains__("name")) and ("first" not in head.lower() or "last" not in head.lower())):
                     #     head="name"
                     #     # print("name")
@@ -360,6 +364,7 @@ async def read_item(body: BodyRequest):
                         head="status"
                     elif(head.lower().__contains__('joining')):
                         head="joining"
+                    
                     closest_match, score = process.extractOne(head, dir(fake))
                     if hasattr(fake, closest_match):
                         faker_function = getattr(fake, closest_match)
@@ -370,14 +375,24 @@ async def read_item(body: BodyRequest):
                         elif(head=="status"):
                             generated_value = random.randint(1,6)
                         elif(head=="date"):
+                            print('date')
                             generated_value=fake.date()
+                            print('date:'+generated_value)
                         elif(head=="datetime"):
                             generated_value=fake.date_time()
+                        elif(head=="mobile"):
+                            # generated_value=fake.random_int(min=13, max=14)
+                            generated_value=""
+                            for _ in range(max_length):  # Generate 9 more random digits
+                                 digit = random.randint(0, 9)
+                                 generated_value += str(digit)
+                                 if(len(generated_value)==max_length):
+                                     break
                         else:
                             generated_value=faker_function()
                         # print("generated_value= "+generated_value)
                         print(datatype)
-                        if("int" not in datatype.lower()):
+                        if(datatype.lower().__contains__("varchar")):
                             generated_value=str(generated_value)
                             if max_length is not None and len(generated_value) > max_length:
                                 generated_value = generated_value[:max_length-1]
