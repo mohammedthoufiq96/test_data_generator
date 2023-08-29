@@ -93,6 +93,8 @@ async def read_item(body: BodyRequest):
                     
                 elif(head.lower().__contains__('payment_mode')):
                     head="credit_card_provider"
+                elif(head.lower().__contains__('status')):
+                    head="status"
                 
                 closest_match, score = process.extractOne(head, dir(fake))
                 # print(closest_match)
@@ -109,7 +111,9 @@ async def read_item(body: BodyRequest):
                     elif(head=="credit_card_provider"):
                         payment_mode = fake.credit_card_provider()
                         generated_data.append(payment_mode)
-
+                    elif(head=="status"):
+                        status = random.randint(1,6)
+                        generated_data.append(status)
                     else:
                         generated_data.append(faker_function())
                 # print(generated_data)
@@ -343,6 +347,8 @@ async def read_item(body: BodyRequest):
                         head = "random"
                     elif(head.lower().__contains__('payment_mode')):
                         head="credit_card_provider"
+                    elif(head.lower().__contains__('status')):
+                        head="status"
                     closest_match, score = process.extractOne(head, dir(fake))
                     if hasattr(fake, closest_match):
                         faker_function = getattr(fake, closest_match)
@@ -350,10 +356,14 @@ async def read_item(body: BodyRequest):
                             generated_value=fake.random_int(min=1, max=999)
                         elif(head=="random"):
                             generated_value = random.randint(18, 80)
+                        elif(head=="status"):
+                            generated_value = random.randint(1,6)
                         else:
                             generated_value=faker_function()
                         # print("generated_value= "+generated_value)
+                        print(datatype)
                         if("int" not in datatype.lower()):
+                            generated_value=str(generated_value)
                             if max_length is not None and len(generated_value) > max_length:
                                 generated_value = generated_value[:max_length-1]
                             # print("aftergeneratedvalue= "+generated_value)
