@@ -95,6 +95,8 @@ async def read_item(body: BodyRequest):
                     head="credit_card_provider"
                 elif(head.lower().__contains__('status')):
                     head="status"
+                elif(head.lower().__contains__('joining') or head.lower().__contains__('date')):
+                    head="joining"
                 
                 closest_match, score = process.extractOne(head, dir(fake))
                 # print(closest_match)
@@ -114,6 +116,9 @@ async def read_item(body: BodyRequest):
                     elif(head=="status"):
                         status = random.randint(1,6)
                         generated_data.append(status)
+                    elif(head=="joining"):
+                        join = fake.date()
+                        generated_data.append(join)
                     else:
                         generated_data.append(faker_function())
                 # print(generated_data)
@@ -330,9 +335,13 @@ async def read_item(body: BodyRequest):
                     head = parts[0]
                     column_names.append(head)
                     datatype=parts[1]
-                    
-
-                    max_length = int(parts[1].split("(")[1].rstrip(")"))
+                    print(type(datatype))
+                    if datatype.lower()=="date" :
+                        head="date"
+                    elif(datatype.lower()=="datetime"):
+                        head="datetime"
+                    else:
+                        max_length = int(parts[1].split("(")[1].rstrip(")"))
                     if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or  head.lower().__contains__("phone")):
                         head="phonenumber"
                     # elif((head.lower()=="name" or head.lower().__contains__("name")) and ("first" not in head.lower() or "last" not in head.lower())):
@@ -349,6 +358,8 @@ async def read_item(body: BodyRequest):
                         head="credit_card_provider"
                     elif(head.lower().__contains__('status')):
                         head="status"
+                    elif(head.lower().__contains__('joining')):
+                        head="joining"
                     closest_match, score = process.extractOne(head, dir(fake))
                     if hasattr(fake, closest_match):
                         faker_function = getattr(fake, closest_match)
@@ -358,6 +369,10 @@ async def read_item(body: BodyRequest):
                             generated_value = random.randint(18, 80)
                         elif(head=="status"):
                             generated_value = random.randint(1,6)
+                        elif(head=="date"):
+                            generated_value=fake.date()
+                        elif(head=="datetime"):
+                            generated_value=fake.date_time()
                         else:
                             generated_value=faker_function()
                         # print("generated_value= "+generated_value)
