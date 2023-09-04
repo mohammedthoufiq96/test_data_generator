@@ -88,7 +88,7 @@ async def read_item(body: BodyRequest):
                     head="uuid4"
                 elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                     head="date of birth"
-                elif(head.lower().__contains__('age')):
+                elif(head.lower().__contains__('age') or head.lower().__contains__('number') or head.lower().__contains__('no') or head.lower().__contains__('num')):
                     head = "random"
                     
                 elif(head.lower().__contains__('payment_mode')):
@@ -302,11 +302,13 @@ async def read_item(body: BodyRequest):
         print(connection)
         if connection.is_connected():
             cursor = connection.cursor()
-            create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(column_name)})"
-            print(create_table_query)
-            cursor.execute(create_table_query)
-            connection.commit()
-            print("cursor")
+            try:
+                create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(column_name)})"
+                print(create_table_query)
+                cursor.execute(create_table_query)
+                connection.commit()
+            except:
+                return {"message": "Table name already exists"}
         else:
             print("not connected")
 
