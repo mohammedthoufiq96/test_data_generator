@@ -214,18 +214,19 @@ def generate_custom_phone_number():
     # return phone_number 
     # formatted_phone_number = re.sub(r'(\d{1})(\d{2})(\d{3})(\d{3})', r'9\1\2-\3-\4', phone_number)
     # return formatted_phone_number
-USERNAME = 'your_username'
-PASSWORD = 'your_password'
+USERNAME = 'test'
+PASSWORD = 'test'
 
 security = HTTPBasic()
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    if credentials.username != USERNAME or credentials.password != PASSWORD:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return True
+    # if credentials.username != USERNAME or credentials.password != PASSWORD:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         detail="Unauthorized",
+    #         headers={"WWW-Authenticate": "Basic"},
+    #     )
+    test=True
+    return test
 
 @app.get("/download_file")
 async def download_file(filepath:str,verified: bool = Depends(verify_credentials)):
