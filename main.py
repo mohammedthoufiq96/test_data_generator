@@ -14,14 +14,9 @@ import csv
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import os
-from fastapi import FastAPI, Depends, HTTPException, status, Form
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
 
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 
 # Create a Faker generator
 fake = Faker("en_GB")
@@ -219,41 +214,17 @@ def generate_custom_phone_number():
     # return phone_number 
     # formatted_phone_number = re.sub(r'(\d{1})(\d{2})(\d{3})(\d{3})', r'9\1\2-\3-\4', phone_number)
     # return formatted_phone_number
-USERNAME = 'test'
-PASSWORD = 'test'
+USERNAME = ''
+PASSWORD = ''
 
 security = HTTPBasic()
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    # if credentials.username != USERNAME or credentials.password != PASSWORD:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Unauthorized",
-    #         headers={"WWW-Authenticate": "Basic"},
-    #     )
-    test=True
-    return test
-
-def prompt_for_download():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <body>
-    <h1>Download Confirmation</h1>
-    <p>Do you want to download the file?</p>
-    <form action="/confirm_download" method="post">
-        <input type="submit" name="download" value="Yes">
-        <input type="submit" name="download" value="No">
-    </form>
-    </body>
-    </html>
-    """
-
-@app.get('/download', response_class=HTMLResponse)
-async def download_prompt():
-    return HTMLResponse(content=prompt_for_download())
+    if credentials.username != USERNAME or credentials.password != PASSWORD:
+        return True
+    return True
 
 @app.get("/download_file")
-async def download_file(filepath:str,download: str = Form(...)):
+async def download_file(filepath:str,verified: bool = Depends(verify_credentials)):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)
