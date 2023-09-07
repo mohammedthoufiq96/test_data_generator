@@ -220,7 +220,11 @@ PASSWORD = ''
 security = HTTPBasic()
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     if credentials.username != USERNAME or credentials.password != PASSWORD:
-        return True
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+            headers={"WWW-Authenticate": "Basic"},
+        )
     return True
 
 @app.get("/download_file")
