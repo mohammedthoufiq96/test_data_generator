@@ -214,8 +214,8 @@ def generate_custom_phone_number():
     # return phone_number 
     # formatted_phone_number = re.sub(r'(\d{1})(\d{2})(\d{3})(\d{3})', r'9\1\2-\3-\4', phone_number)
     # return formatted_phone_number
-USERNAME = ''
-PASSWORD = ''
+USERNAME = 'test'
+PASSWORD = 'test'
 
 security = HTTPBasic()
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
