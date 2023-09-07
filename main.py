@@ -14,9 +14,14 @@ import csv
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import os
+from fastapi import FastAPI, Depends, HTTPException, status, Form
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 # Create a Faker generator
 fake = Faker("en_GB")
@@ -228,8 +233,27 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     test=True
     return test
 
+def prompt_for_download():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <h1>Download Confirmation</h1>
+    <p>Do you want to download the file?</p>
+    <form action="/confirm_download" method="post">
+        <input type="submit" name="download" value="Yes">
+        <input type="submit" name="download" value="No">
+    </form>
+    </body>
+    </html>
+    """
+
+@app.get('/download', response_class=HTMLResponse)
+async def download_prompt():
+    return HTMLResponse(content=prompt_for_download())
+
 @app.get("/download_file")
-async def download_file(filepath:str,verified: bool = Depends(verify_credentials)):
+async def download_file(filepath:str,download: str = Form(...)):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)
