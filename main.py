@@ -233,12 +233,10 @@ async def download_file(filepath:str,verified: bool = Depends(verify_credentials
     file_path = filepath
     print(file_path)
     csv_file_path_url = file_path.replace("\\", "/")
-    base_url = "http://test-data-generator-u9tl.onrender.com/download_file?filepath="
-    fileurl=FileResponse(file_path, headers={"Content-Disposition": f"attachment; filename={os.path.basename(csv_file_path_url)}"})
+    base_url = "https://test-data-generator-u9tl.onrender.com"
     # csv_url = f"{base_url}/download/{csv_file_path_url}"
-    finalurl=base_url+fileurl
     print(os.path.basename(csv_file_path_url))
-    return finalurl
+    return FileResponse(file_path, headers={"Content-Disposition": f"attachment; filename={os.path.basename(csv_file_path_url)}"})
 
     # return {"csv_url": csv_url}
     # return FileResponse(file_path, headers={"Content-Disposition": "attachment; filename=newtesttable.csv"})
