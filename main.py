@@ -342,6 +342,8 @@ async def read_item(body: BodyRequest):
                         head="date"
                     elif(datatype.lower()=="datetime"):
                         head="datetime"
+                    elif(datatype.lower()=="int"):
+                        print("int")
                     else:
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
                     if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or  head.lower().__contains__("phone")):
