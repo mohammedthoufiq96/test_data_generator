@@ -3,3 +3,4 @@ faker
 fuzzywuzzy
 uvicorn
 mysql-connector-python
+python-multipart
