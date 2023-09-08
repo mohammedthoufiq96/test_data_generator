@@ -218,19 +218,17 @@ USERNAME = ''
 PASSWORD = ''
 
 security = HTTPBasic()
-def verify_credentials(username: str, password: str):
-    if USERNAME != 'your_username' or PASSWORD != 'your_password':
-        return True
-    return True
-
-@app.get("/download_file")
-async def download_file( username: str,password: str,filepath:str):
-    if not verify_credentials(username, password):
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != USERNAME or credentials.password != PASSWORD:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized",
             headers={"WWW-Authenticate": "Basic"},
         )
+    return True
+
+@app.get("/download_file")
+async def download_file(filepath:str):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)
