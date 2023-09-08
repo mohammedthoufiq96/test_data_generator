@@ -228,13 +228,13 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     return True
 
 @app.get("/download_file")
-async def download_file(filepath:str):
+async def download_file(filepath:str,verified: bool = Depends(verify_credentials)):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)
     csv_file_path_url = file_path.replace("\\", "/")
     base_url = "https://test-data-generator-u9tl.onrender.com"
-    # csv_url = f"{base_url}/download/{csv_file_path_url}"
+    # csv_url = f"{base_url}/download?{csv_file_path_url}"
     print(os.path.basename(csv_file_path_url))
     return FileResponse(file_path, headers={"Content-Disposition": f"attachment; filename={os.path.basename(csv_file_path_url)}"})
 

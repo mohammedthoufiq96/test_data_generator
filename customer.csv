@@ -1,6 +1,6 @@
 cust_name varchar(20),cust_no varchar(20),cust_age int,cust_dob varchar(20),payment_mode varchar(20)
-Kim Bryan-King,80,78,1978-07-16,VISA 13 digit
-Mr Donald Hunt,43,61,1984-02-16,Maestro
-Kate Jones,31,29,2003-11-15,Discover
-Lorraine Simpson,32,68,1996-04-27,Mastercard
-Joyce Norris,60,67,1986-08-07,VISA 16 digit
+Miss Katie Lloyd,78,80,1993-12-15,American Express
+Kayleigh Rogers,78,27,2007-05-31,Diners Club / Carte Blanche
+Adrian Sanders,58,46,1980-08-02,Diners Club / Carte Blanche
+Dr Lynda Martin,79,63,1990-11-11,American Express
+Claire Butler-Barrett,43,65,2005-01-12,Discover
