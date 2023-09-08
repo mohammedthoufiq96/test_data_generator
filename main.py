@@ -242,13 +242,23 @@ class APIToken(BaseModel):
     api_token: str
 
 # Create a function to check if the API token is valid
-def verify_api_token(api_token: str = Depends(lambda token: "12345")):
-    if api_token not in user_tokens.values():
-        raise HTTPException(status_code=401, detail="Invalid API token")
-    return api_token
+# Define your username and password for basic authentication
+USERNAME = 'your_username'
+PASSWORD = 'your_password'
+
+security = HTTPBasic()
+
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    if credentials.username != USERNAME or credentials.password != PASSWORD:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return True
 
 @app.get("/download_file")
-async def download_file(filepath:str,api_token: str = Depends(verify_api_token)):
+async def download_file(filepath:str,verified: bool = Depends(verify_credentials)):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)
