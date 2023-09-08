@@ -228,7 +228,7 @@ def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     return True
 
 @app.get("/download_file")
-async def download_file(filepath:str,verified: bool = Depends(verify_credentials)):
+async def download_file(filepath:str):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)
