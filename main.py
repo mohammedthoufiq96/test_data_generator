@@ -243,8 +243,8 @@ class APIToken(BaseModel):
 
 # Create a function to check if the API token is valid
 # Define your username and password for basic authentication
-USERNAME = 'your_username'
-PASSWORD = 'your_password'
+USERNAME = 'test'
+PASSWORD = 'test'
 
 security = HTTPBasic()
 
