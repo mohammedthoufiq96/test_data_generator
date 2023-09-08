@@ -468,3 +468,43 @@ async def read_item(body: BodyRequest):
     return {"message": "Data inserted into MySQL database"}
 
 
+@app.get("/tablecheck")
+async def tablecheck(tablenames:str):
+    try:
+        connection = mysql.connector.connect(
+            host="ec2-3-6-90-112.ap-south-1.compute.amazonaws.com",
+            user="jagan",
+            password="Jagan@1997",
+            database="test_data_generation"
+        )
+        print(connection)
+        tablename = tablenames
+        cursor = connection.cursor()
+
+# Use a parameterized query to avoid SQL injection
+        c_table_query = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'test_data_generation' AND table_name = %s);"
+
+# Execute the query with the tablename as a parameter
+        cursor.execute(c_table_query, (tablename,))
+
+# Fetch the result
+        result = cursor.fetchone()
+
+# Check if the table exists
+        table_exists = bool(result[0])
+
+# Print the result
+        print(f"Table '{tablename}' exists: {table_exists}")
+
+# Close the cursor and connection
+        cursor.close()
+        connection.close()
+            # except:
+                
+            #     return {"message": "Table name already exists"}
+      
+    except:
+        return "Problem in connection Please try agin later"
+    
+
+    return table_exists
