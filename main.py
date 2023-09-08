@@ -49,7 +49,21 @@ async def read_item(body: BodyRequest):
     #     csvwriter.writerow(headers_input)
 
     filename = tablename + '.'+body.filetype.lower() # Change the extension based on your desired file format
-    data = headers_input  # Data you want to write
+    datawithtype= headers_input  
+    # column_definitions=data
+    # print(column_definitions.__len__)
+    # Data you want to write
+    i=1
+    data=[]
+    for column_def in datawithtype:
+        print(i)
+    # Split each column definition by space to separate the data type and size
+        parts = column_def.split()
+    
+    # Take only the first part (the column name) and append it to the new list
+        column_name = parts[0]
+        data.append(column_name)
+        i=i+1
     print(data)
     with open(filename, 'w', newline='') as file:
         if filename.endswith('.csv'):
@@ -87,8 +101,10 @@ async def read_item(body: BodyRequest):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
                     head="name"
-                elif(head.lower()=="payment_id" or head.lower()=="paymentid" ):
+                elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") ):
                     head="uuid4"
+                    if(head.lower().__contains__("int")):
+                        head="random"
                 elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                     head="date of birth"
                 elif(head.lower().__contains__('age') or head.lower().__contains__('number') or head.lower().__contains__('no') or head.lower().__contains__('num') or head.lower().__contains__("id")):
@@ -217,18 +233,22 @@ def generate_custom_phone_number():
 USERNAME = ''
 PASSWORD = ''
 
-security = HTTPBasic()
-def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    if credentials.username != USERNAME or credentials.password != PASSWORD:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return True
+user_tokens = {
+    "testuser": "12345"
+}
+
+# Model for API token
+class APIToken(BaseModel):
+    api_token: str
+
+# Create a function to check if the API token is valid
+def verify_api_token(api_token: str = Depends(lambda token: "12345")):
+    if api_token not in user_tokens.values():
+        raise HTTPException(status_code=401, detail="Invalid API token")
+    return api_token
 
 @app.get("/download_file")
-async def download_file(filepath:str):
+async def download_file(filepath:str,api_token: str = Depends(verify_api_token)):
     print("table_name:"+filepath)
     file_path = filepath
     print(file_path)

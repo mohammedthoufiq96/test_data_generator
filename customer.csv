@@ -1,6 +1,6 @@
-cust_name varchar(20),cust_no varchar(20),cust_age int,cust_dob varchar(20),payment_mode varchar(20)
-Miss Katie Lloyd,78,80,1993-12-15,American Express
-Kayleigh Rogers,78,27,2007-05-31,Diners Club / Carte Blanche
-Adrian Sanders,58,46,1980-08-02,Diners Club / Carte Blanche
-Dr Lynda Martin,79,63,1990-11-11,American Express
-Claire Butler-Barrett,43,65,2005-01-12,Discover
+cust_name,cust_no,cust_age,cust_dob,payment_mode
+Adrian Clark,27,39,2002-06-30,Discover
+Wendy Sinclair,60,69,2020-02-01,VISA 19 digit
+Adrian Ward,25,56,2005-02-12,VISA 16 digit
+Victor Khan,40,61,2022-07-17,JCB 16 digit
+Guy Davies,32,29,1970-09-09,VISA 16 digit
