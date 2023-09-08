@@ -164,7 +164,7 @@ async def read_item(body: BodyRequest):
                     file.write('\t'.join(map(str, generated_data)) + '\n')
                 # file.write('\t'.join(generated_data))
             elif filename.endswith('.json'):
-                  result_dict = {key: value for key, value in zip(headers_input, generated_data)}
+                  result_dict = {key: value for key, value in zip(data, generated_data)}
 
                   json.dump(result_dict, file)
                 #   data.append()
