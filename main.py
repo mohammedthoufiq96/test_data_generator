@@ -152,6 +152,11 @@ async def read_item(body: BodyRequest):
                     head="status"
                 elif(head.lower().__contains__('joining') or head.lower().__contains__('date')):
                     head="joining"
+                elif(head.lower().__contains__("currentdate") or head.lower().__contains("currenttime")):
+                    from datetime import date
+
+                    today = date.today()
+                    head="currentdate"
                 
                 closest_match, score = process.extractOne(head, dir(fake))
                 # print(closest_match)
@@ -177,6 +182,11 @@ async def read_item(body: BodyRequest):
                     elif(head=="joining"):
                         join = fake.date()
                         generated_data.append(join)
+                    elif(head=="currentdate"):
+                        from datetime import date
+
+                        today = date.today()
+                        generated_data.append(today)
                     else:
                         generated_data.append(faker_function())
                 # print(generated_data)
