@@ -58,26 +58,26 @@ async def read_item(body: BodyRequest):
     i=1
     data=[]
     for column_def in datawithtype:
-        print(column_def)
+        # print(column_def)
         if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date")):
 
     # Split each column definition by space to separate the data type and size
-            print("columndef:"+column_def)
+            # print("columndef:"+column_def)
             parts = column_def.split(" ")
 
-            print(parts)
+            # print(parts)
     
     # Take only the first part (the column name) and append it to the new list
             column_name = parts[0]
-            print("datatype:"+parts[1])
+            # print("datatype:"+parts[1])
             datatype=parts[1]
             data.append(column_name)
             max_length = None
             if datatype.lower().__contains__("varchar"):
                     if column_def.lower().__contains__("("):
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
-                        print("stringlength")
-                        print(max_length)
+                        # print("stringlength")
+                        # print(max_length)
                         minlength=max_length-1
                         maxcount = (10 **max_length)-1
                         mincount=10 **minlength
@@ -88,8 +88,8 @@ async def read_item(body: BodyRequest):
             elif datatype.lower().__contains__("int"):
                     if column_def.lower().__contains__("("):
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
-                        print("intlength")
-                        print(max_length)
+                        # print("intlength")
+                        # print(max_length)
                         minlength=max_length-1
                         maxcount = (10 **max_length)-1
                         mincount=10 **minlength
@@ -99,7 +99,7 @@ async def read_item(body: BodyRequest):
         else:
             column_name=datawithtype
         i=i+1
-    print(data)
+    # print(data)
     with open(filename, 'w', newline='') as file:
         if filename.endswith('.csv'):
             import csv
@@ -132,7 +132,7 @@ async def read_item(body: BodyRequest):
         for _ in range(count):
             generated_data=[]
             for head in headers_input:
-                print("--------------"+head)
+                # print("--------------"+head)
                 if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or head.lower().__contains__("phone")):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
@@ -190,16 +190,16 @@ async def read_item(body: BodyRequest):
             if filename.endswith('.csv'):
                 csvwriter.writerow(generated_data)
             elif filename.endswith('.txt'):
-                print("generting data")
-                print("textformat:"+textformat)
+                # print("generting data")
+                # print("textformat:"+textformat)
                 if(textformat.lower().__contains__("csv")):
                 #  csv_writer = csv.writer(file)
                  csv_writer.writerow(generated_data)
                 elif textformat=="tsv":
                 # tsv_writer = csv.writer(file, delimiter='\t')
                 # tsv_writer.writerows(generated_data)  
-                    print("generting data")
-                    print(generated_data)
+                    # print("generting data")
+                    # print(generated_data)
                     file.write('\t'.join(map(str, generated_data)) + '\n')
                 # file.write('\t'.join(generated_data))
             elif filename.endswith('.json'):
@@ -208,12 +208,12 @@ async def read_item(body: BodyRequest):
                   json.dump(result_dict, file)
                 #   data.append()
             
-        print(final_data)
+        # print(final_data)
         row = generated_data
         # print(row)
         script_path = os.path.dirname(os.path.abspath(__file__))
         
-        print(script_path)
+        # print(script_path)
         file_path = os.path.join(script_path, filename)
 
         return file_path
@@ -246,13 +246,13 @@ def verify_api_token(api_token: str = Depends(lambda token: "12345")):
 
 @app.get("/download_file")
 async def download_file(filepath:str):
-    print("table_name:"+filepath)
+    # print("table_name:"+filepath)
     file_path = filepath
-    print(file_path)
+    # print(file_path)
     csv_file_path_url = file_path.replace("\\", "/")
     base_url = "https://test-data-generator-u9tl.onrender.com"
     # csv_url = f"{base_url}/download?{csv_file_path_url}"
-    print(os.path.basename(csv_file_path_url))
+    # print(os.path.basename(csv_file_path_url))
     return FileResponse(file_path, headers={"Content-Disposition": f"attachment; filename={os.path.basename(csv_file_path_url)}"})
 
     # return {"csv_url": csv_url}
