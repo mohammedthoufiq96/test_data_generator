@@ -137,7 +137,7 @@ async def read_item(body: BodyRequest):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
                     head="name"
-                elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") ):
+                elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") or head.lower().__contains__("payment") ):
                     head="uuid4"
                     if(head.lower().__contains__("int")):
                         head="random"
