@@ -1,3 +1,4 @@
+import datetime
 import random
 import re
 from fastapi import FastAPI, Depends, HTTPException, status
@@ -150,11 +151,11 @@ async def read_item(body: BodyRequest):
                     head="credit_card_provider"
                 elif(head.lower().__contains__('status')):
                     head="status"
+                elif(head.lower().__contains__("currentdate") or head.lower().__contains__("currenttime")):
+                    head="currentdate"
                 elif(head.lower().__contains__('joining') or head.lower().__contains__('date')):
                     head="joining"
-                elif(head.lower().__contains__("currentdate") or head.lower().__contains("currenttime")):
-                
-                    head="currentdate"
+               
                 
                 closest_match, score = process.extractOne(head, dir(fake))
                 # print(closest_match)
@@ -181,10 +182,11 @@ async def read_item(body: BodyRequest):
                         join = fake.date()
                         generated_data.append(join)
                     elif(head=="currentdate"):
-                        from datetime import date
+                        from datetime import date 
+                        today =  datetime.datetime.now()
+                        formatted_datetime = today.strftime('%Y-%m-%d %H:%M:%S')
 
-                        today = date.today()
-                        generated_data.append(today)
+                        generated_data.append(formatted_datetime)
                     else:
                         generated_data.append(faker_function())
                 # print(generated_data)

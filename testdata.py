@@ -1,3 +1,4 @@
+import datetime
 from fastapi import FastAPI
 import mysql.connector
 from mysql.connector import Error
@@ -48,6 +49,7 @@ def insert_data(connection, tablename, headers_input, count):
         cursor = connection.cursor()
         column_names=[]
         column_headers=[]
+       
         # print("yres")
         # print(headers_input)
         for input_string in headers_input:
@@ -77,30 +79,32 @@ def insert_data(connection, tablename, headers_input, count):
             for head in headers_input:
                 # print("--------------"+head)
                 
-
-                parts = head.split(" ")
+                if  head.__contains__("varchar") or head.__contains__("int"):
+                    # print("---------------in-----------------------")
+                    parts = head.split(" ")
                 # print(parts)
-                head_part = parts[0]
-                datatype = parts[1]
-                max_length = None
-                if datatype.lower().__contains__("varchar"):
-                    max_length = int(parts[1].split("(")[1].rstrip(")"))
-                    # print("stringlength")
-                    # print(max_length)
-                    minlength=max_length-1
-                    maxcount = (10 **max_length)-1
-                    mincount=10 **minlength
-                elif datatype.lower().__contains__("int"):
-                    if head.lower().__contains__("("):
+                    head_part = parts[0]
+                    datatype = parts[1]
+                    max_length = None
+                    if datatype.lower().__contains__("varchar"):
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
-                        # print("intlength")
+                        # print("stringlength")
                         # print(max_length)
                         minlength=max_length-1
                         maxcount = (10 **max_length)-1
                         mincount=10 **minlength
-                    else:
-                        maxcount=100
-                        mincount=1
+                    elif datatype.lower().__contains__("int"):
+                        if head.lower().__contains__("("):
+                            max_length = int(parts[1].split("(")[1].rstrip(")"))
+                        # print("intlength")
+                        # print(max_length)
+                            minlength=max_length-1
+                            maxcount = (10 **max_length)-1
+                            mincount=10 **minlength
+                        else:
+                            maxcount=100
+                            mincount=1
+                
 
                 # print(datatype)
 
@@ -126,9 +130,11 @@ def insert_data(connection, tablename, headers_input, count):
                     head = "status"
                 elif "joining" in head.lower():
                     head = "joining"
-                elif(head.lower().__contains__("currentdate") or head.lower().__contains("currenttime") or head.lower().__contains("createddate")):
+                elif(head.lower().__contains__("currentdate") or head.lower().__contains__("currenttime") or head.lower().__contains__("createddate")):
                 
                     head="currentdate"
+                elif(head.lower().__contains__("float") or head.lower().__contains__('double') or head.lower().__contains__('decimal')):
+                    head = "random_decimal"
 
                 closest_match, _ = process.extractOne(head, dir(fake))
                 faker_function = getattr(fake, closest_match)
@@ -149,8 +155,11 @@ def insert_data(connection, tablename, headers_input, count):
                 elif head=="currentdate":
                     from datetime import date
 
-                    today = date.today()
-                    generated_value=today
+                    today =  datetime.datetime.now()
+                    formatted_datetime = today.strftime('%Y-%m-%d %H:%M:%S')
+                    generated_value=formatted_datetime
+                elif head=="random_decimal":
+                    generated_value=round(random.uniform(1,10), 2)
                 else:
                     generated_value = faker_function()
 
@@ -167,7 +176,7 @@ def insert_data(connection, tablename, headers_input, count):
             columns_string = ', '.join(column_names)
             # print(generated_data)
             insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES ({', '.join(generated_data)})"
-            # print(insert_query)
+            print(insert_query)
             cursor.execute(insert_query)
             connection.commit()
 
