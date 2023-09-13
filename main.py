@@ -138,7 +138,7 @@ async def read_item(body: BodyRequest):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
                     head="name"
-                elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") or head.lower().__contains__("payment") or head.lower().__contains__("int")):
+                elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") or head.lower().__contains__("int")):
                     head="uuid4"
                     if(head.lower().__contains__("int")):
                         head="random"
@@ -154,7 +154,10 @@ async def read_item(body: BodyRequest):
                 elif(head.lower().__contains__("currentdate") or head.lower().__contains__("currenttime")):
                     head="currentdate"
                 elif(head.lower().__contains__('joining') or head.lower().__contains__('date')):
-                    head="joining"
+                    if(head.lower().__contains__("time")):
+                        head="datetime"
+                    else:
+                        head="joining"
                
                 
                 closest_match, score = process.extractOne(head, dir(fake))
@@ -185,8 +188,17 @@ async def read_item(body: BodyRequest):
                         from datetime import date 
                         today =  datetime.datetime.now()
                         formatted_datetime = today.strftime('%Y-%m-%d %H:%M:%S')
-
                         generated_data.append(formatted_datetime)
+                    elif(head=="datetime"):
+                        join = fake.date()
+                        hour = random.randint(0, 23)
+                        minute = random.randint(0, 59)
+                        second = random.randint(0, 59)
+
+                        fake_time = join+" "+f"{hour:02d}:{minute:02d}:{second:02d}"
+                        generated_data.append(fake_time)
+
+                        
                     else:
                         generated_data.append(faker_function())
                 # print(generated_data)
