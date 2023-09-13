@@ -25,20 +25,20 @@ def create_connection():
         )
         return connection
     except Error as e:
-        print("Error:", e)
+        # print("Error:", e)
         return None
 
 def create_table(connection, tablename, column_names):
     try:
         cursor = connection.cursor()
         create_table_query = f"CREATE TABLE IF NOT EXISTS test_data_generation.{tablename} ({', '.join(column_names)})"
-        print(create_table_query)
+        # print(create_table_query)
         cursor.execute(create_table_query)
         connection.commit()
         cursor.close()
         return "create table"
     except Error as e:
-        print("Error creating table:", e)
+        # print("Error creating table:", e)
         return "Error creating table"
         
         # return Error creating table
@@ -48,8 +48,8 @@ def insert_data(connection, tablename, headers_input, count):
         cursor = connection.cursor()
         column_names=[]
         column_headers=[]
-        print("yres")
-        print(headers_input)
+        # print("yres")
+        # print(headers_input)
         for input_string in headers_input:
     # Split the input string by comma
             column_definitions = input_string.split(',')
@@ -61,40 +61,40 @@ def insert_data(connection, tablename, headers_input, count):
                 column_names.append(column_name)
                 
                 
-        print(column_headers)
-        print(column_names)
+        # print(column_headers)
+        # print(column_names)
         for _ in range(count):
             generated_data = []
             # column_names = []
             # print("test")
-            print(column_headers)
-            print(len(column_headers))
+            # print(column_headers)
+            # print(len(column_headers))
             # components = [component.replace("'", "").replace('"', '') for component in headers_input]
 
             # print(components)
             i=0
             # headers_input = headers_input.split(',')
             for head in headers_input:
-                print("--------------"+head)
+                # print("--------------"+head)
                 
 
                 parts = head.split(" ")
-                print(parts)
+                # print(parts)
                 head_part = parts[0]
                 datatype = parts[1]
                 max_length = None
                 if datatype.lower().__contains__("varchar"):
                     max_length = int(parts[1].split("(")[1].rstrip(")"))
-                    print("stringlength")
-                    print(max_length)
+                    # print("stringlength")
+                    # print(max_length)
                     minlength=max_length-1
                     maxcount = (10 **max_length)-1
                     mincount=10 **minlength
                 elif datatype.lower().__contains__("int"):
                     if head.lower().__contains__("("):
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
-                        print("intlength")
-                        print(max_length)
+                        # print("intlength")
+                        # print(max_length)
                         minlength=max_length-1
                         maxcount = (10 **max_length)-1
                         mincount=10 **minlength
@@ -102,7 +102,7 @@ def insert_data(connection, tablename, headers_input, count):
                         maxcount=100
                         mincount=1
 
-                print(datatype)
+                # print(datatype)
 
                 # Handle data generation
                 if head.lower().__contains__("mobilenumber") or head.lower().__contains__("mobile") or  head.lower().__contains__("phone") :
@@ -157,16 +157,16 @@ def insert_data(connection, tablename, headers_input, count):
                 # column_names.append(head)
 
             columns_string = ', '.join(column_names)
-            print(generated_data)
+            # print(generated_data)
             insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES ({', '.join(generated_data)})"
-            print(insert_query)
+            # print(insert_query)
             cursor.execute(insert_query)
             connection.commit()
 
         cursor.close()
         return "Data inserted Successfully"
     except Error as e:
-        print("Error inserting data:", e)
+        # print("Error inserting data:", e)
         return "Error inserting data"
        
 
