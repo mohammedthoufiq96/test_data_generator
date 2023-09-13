@@ -54,15 +54,18 @@ async def read_item(body: BodyRequest):
     # column_definitions=data
     # print(column_definitions.__len__)
     # Data you want to write
+    print(datawithtype)
     i=1
     data=[]
     for column_def in datawithtype:
-        print(i)
+        print(column_def)
         if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date")):
 
     # Split each column definition by space to separate the data type and size
-            print(column_def)
-            parts = column_def.split
+            print("columndef:"+column_def)
+            parts = column_def.split(" ")
+
+            print(parts)
     
     # Take only the first part (the column name) and append it to the new list
             column_name = parts[0]
