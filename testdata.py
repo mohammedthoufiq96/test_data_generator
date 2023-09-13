@@ -166,7 +166,7 @@ def insert_data(connection, tablename, headers_input, count):
         cursor.close()
         return "Data inserted Successfully"
     except Error as e:
-        # print("Error inserting data:", e)
+        print("Error inserting data:", e)
         return "Error inserting data"
        
 
