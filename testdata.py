@@ -74,7 +74,7 @@ def insert_data(connection, tablename, headers_input, count):
             # print(components)
             i=0
             # headers_input = headers_input.split(',')
-            for head in column_headers:
+            for head in headers_input:
                 print("--------------"+head)
                 
 
