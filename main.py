@@ -14,6 +14,7 @@ import csv
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import os
+from testdata import *
 
 
 app = FastAPI()
@@ -57,12 +58,43 @@ async def read_item(body: BodyRequest):
     data=[]
     for column_def in datawithtype:
         print(i)
+        if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date")):
+
     # Split each column definition by space to separate the data type and size
-        parts = column_def.split()
+            print(column_def)
+            parts = column_def.split
     
     # Take only the first part (the column name) and append it to the new list
-        column_name = parts[0]
-        data.append(column_name)
+            column_name = parts[0]
+            print("datatype:"+parts[1])
+            datatype=parts[1]
+            data.append(column_name)
+            max_length = None
+            if datatype.lower().__contains__("varchar"):
+                    if column_def.lower().__contains__("("):
+                        max_length = int(parts[1].split("(")[1].rstrip(")"))
+                        print("stringlength")
+                        print(max_length)
+                        minlength=max_length-1
+                        maxcount = (10 **max_length)-1
+                        mincount=10 **minlength
+                    else:
+                        maxcount=100
+                        mincount=1
+
+            elif datatype.lower().__contains__("int"):
+                    if column_def.lower().__contains__("("):
+                        max_length = int(parts[1].split("(")[1].rstrip(")"))
+                        print("intlength")
+                        print(max_length)
+                        minlength=max_length-1
+                        maxcount = (10 **max_length)-1
+                        mincount=10 **minlength
+                    else:
+                        maxcount=100
+                        mincount=1
+        else:
+            column_name=datawithtype
         i=i+1
     print(data)
     with open(filename, 'w', newline='') as file:
@@ -97,6 +129,7 @@ async def read_item(body: BodyRequest):
         for _ in range(count):
             generated_data=[]
             for head in headers_input:
+                print("--------------"+head)
                 if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or head.lower().__contains__("phone")):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
@@ -108,7 +141,7 @@ async def read_item(body: BodyRequest):
                 elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                     head="date of birth"
                 elif(head.lower().__contains__('age') or head.lower().__contains__('number') or head.lower().__contains__('no') or head.lower().__contains__('num') or head.lower().__contains__("id")):
-                    head = "random"
+                    head = "randomage"
                     
                 elif(head.lower().__contains__('payment_mode')):
                     head="credit_card_provider"
@@ -127,7 +160,10 @@ async def read_item(body: BodyRequest):
                         # print(num)
                         generated_data.append(num)
                     elif(head=="random"):
-                            age = random.randint(18, 80)
+                            age = random.randint(mincount, maxcount)
+                            generated_data.append(age)
+                    elif(head=="randomage"):
+                            age = random.randint(18, 99)
                             generated_data.append(age)
                     elif(head=="credit_card_provider"):
                         payment_mode = fake.credit_card_provider()
@@ -179,48 +215,6 @@ async def read_item(body: BodyRequest):
 
         return file_path
     
-
-
-    
-
-
-# @app.post("/generatedatatest/")
-# async def read_item(body: BodyRequest):
-#     headers_input = body.columns
-#     count = body.count
-#     tablename = body.tablename
-
-#     # Connect to the SQLite database
-#     db_path = os.path.join(os.path.dirname(__file__), "data.db")
-#     conn = sqlite3.connect(db_path)
-#     cursor = conn.cursor()
-
-#     # Create table
-#     create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(headers_input)})"
-#     cursor.execute(create_table_query)
-#     conn.commit()
-
-#     # Insert data into table
-#     for _ in range(count):
-#         generated_data = []
-#         for head in headers_input:
-#             if head == "mobilenumber":
-#                 head = "phonenumber"
-#             closest_match, score = process.extractOne(head, dir(fake))
-#             if hasattr(fake, closest_match):
-#                 faker_function = getattr(fake, closest_match)
-#                 generated_data.append(f"'{faker_function()}'")
-#             else:
-#                 generated_data.append("''")
-
-#         insert_query = f"INSERT INTO {tablename} VALUES ({', '.join(generated_data)})"
-#         cursor.execute(insert_query)
-#         conn.commit()
-
-#     conn.close()
-
-    # return {"message": "Data inserted into SQLite database"}
-
 
 
 def generate_custom_phone_number():
@@ -317,155 +311,155 @@ class BodyRequest(BaseModel):
     count: int
     tablename: str
 
-@app.post("/generatedatatest/")
-async def read_item(body: BodyRequest):
-    headers_input = body.columns
-    column_name=body.columnswithdatabase
-    count = body.count
-    tablename = body.tablename
-    tablename=check_word_count(tablename)
-    connection=None
-    # Connect to MySQL database
-    try:
-        connection = mysql.connector.connect(
-            host="ec2-3-6-90-112.ap-south-1.compute.amazonaws.com",
-            user="jagan",
-            password="Jagan@1997",
-            database="test_data_generation"
-        )
-        print(connection)
-        if connection.is_connected():
-            cursor = connection.cursor()
-            try:
-                create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(column_name)})"
-                print(create_table_query)
-                cursor.execute(create_table_query)
-                connection.commit()
-            except:
-                return {"message": "Table name already exists"}
-        else:
-            print("not connected")
+# @app.post("/generatedatatest/")
+# async def read_item(body: BodyRequest):
+#     headers_input = body.columns
+#     column_name=body.columnswithdatabase
+#     count = body.count
+#     tablename = body.tablename
+#     tablename=check_word_count(tablename)
+#     connection=None
+#     # Connect to MySQL database
+#     try:
+#         connection = mysql.connector.connect(
+#             host="ec2-3-6-90-112.ap-south-1.compute.amazonaws.com",
+#             user="jagan",
+#             password="Jagan@1997",
+#             database="test_data_generation"
+#         )
+#         print(connection)
+#         if connection.is_connected():
+#             cursor = connection.cursor()
+#             try:
+#                 create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(column_name)})"
+#                 print(create_table_query)
+#                 cursor.execute(create_table_query)
+#                 connection.commit()
+#             except:
+#                 return {"message": "Table name already exists"}
+#         else:
+#             print("not connected")
 
-    #     print("create table")
-    #     create_table_query = """
-    # CREATE TABLE IF NOT EXISTS employees (
-    #     id INT AUTO_INCREMENT PRIMARY KEY,
-    #     first_name VARCHAR(255),
-    #     last_name VARCHAR(255),
-    #     email VARCHAR(255)
-    # )
-    # """
-        print("creating table")
-        cursor.execute(create_table_query)
-        connection.commit()
-        print("table created Successfully")
-            # Insert data into table
-        if connection.is_connected():
-            cursor = connection.cursor()
-            for _ in range(count):
-                generated_data = []
-                column_names = []
-                for head in headers_input:
-                    parts = head.split()
-                    print(parts)
-                    head = parts[0]
-                    column_names.append(head)
-                    datatype=parts[1]
-                    print(type(datatype))
-                    if datatype.lower()=="date" :
-                        head="date"
-                    elif(datatype.lower()=="datetime"):
-                        head="datetime"
-                    elif(datatype.lower()=="int"):
-                        print("int")
-                    else:
-                        max_length = int(parts[1].split("(")[1].rstrip(")"))
-                    if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or  head.lower().__contains__("phone")):
-                        if(datatype.lower().__contains__("int")):
-                            head="mobile"
-                        else:
-                            head="phonenumber"
+#     #     print("create table")
+#     #     create_table_query = """
+#     # CREATE TABLE IF NOT EXISTS employees (
+#     #     id INT AUTO_INCREMENT PRIMARY KEY,
+#     #     first_name VARCHAR(255),
+#     #     last_name VARCHAR(255),
+#     #     email VARCHAR(255)
+#     # )
+#     # """
+#         print("creating table")
+#         cursor.execute(create_table_query)
+#         connection.commit()
+#         print("table created Successfully")
+#             # Insert data into table
+#         if connection.is_connected():
+#             cursor = connection.cursor()
+#             for _ in range(count):
+#                 generated_data = []
+#                 column_names = []
+#                 for head in headers_input:
+#                     parts = head.split()
+#                     print(parts)
+#                     head = parts[0]
+#                     column_names.append(head)
+#                     datatype=parts[1]
+#                     print("-----------"+datatype+"-----------------------")
+#                     if datatype.lower()=="date" :
+#                         head="date"
+#                     elif(datatype.lower()=="datetime"):
+#                         head="datetime"
+#                     elif(datatype.lower()=="int"):
+#                         print("int")
+#                     else:
+#                         max_length = int(parts[1].split("(")[1].rstrip(")"))
+#                     if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or  head.lower().__contains__("phone")):
+#                         if(datatype.lower().__contains__("int")):
+#                             head="mobile"
+#                         else:
+#                             head="phonenumber"
 
-                    # elif((head.lower()=="name" or head.lower().__contains__("name")) and ("first" not in head.lower() or "last" not in head.lower())):
-                    #     head="name"
-                    #     # print("name")
-                    elif(head.lower()=="payment_id" or head.lower()=="paymentid" or head.lower().__contains__("id")):
-                        head="uuid4"
+#                     # elif((head.lower()=="name" or head.lower().__contains__("name")) and ("first" not in head.lower() or "last" not in head.lower())):
+#                     #     head="name"
+#                     #     # print("name")
+#                     elif(head.lower()=="payment_id" or head.lower()=="paymentid" or head.lower().__contains__("id")):
+#                         head="uuid4"
                         
-                    elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
-                        head="date of birth"
-                    elif(head.lower().__contains__('age') or head.lower().__contains__('s_no') or head.lower().__contains__('no') or head.lower().__contains__('number')):
-                        head = "random"
-                    elif(head.lower().__contains__('payment_mode')):
-                        head="credit_card_provider"
-                    elif(head.lower().__contains__('status')):
-                        head="status"
-                    elif(head.lower().__contains__('joining')):
-                        head="joining"
+#                     elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
+#                         head="date of birth"
+#                     elif(head.lower().__contains__('age') or head.lower().__contains__('s_no') or head.lower().__contains__('no') or head.lower().__contains__('number')):
+#                         head = "random"
+#                     elif(head.lower().__contains__('payment_mode')):
+#                         head="credit_card_provider"
+#                     elif(head.lower().__contains__('status')):
+#                         head="status"
+#                     elif(head.lower().__contains__('joining')):
+#                         head="joining"
                     
-                    closest_match, score = process.extractOne(head, dir(fake))
-                    if hasattr(fake, closest_match):
-                        faker_function = getattr(fake, closest_match)
-                        if(head=="uuid4"):
-                            generated_value=fake.random_int(min=1, max=999)
-                        elif(head=="random"):
-                            generated_value = random.randint(18, 80)
-                        elif(head=="status"):
-                            generated_value = random.randint(1,6)
-                        elif(head=="date"):
-                            print('date')
-                            generated_value=fake.date()
-                            print('date:'+generated_value)
-                        elif(head=="datetime"):
-                            generated_value=fake.date_time()
-                        elif(head=="mobile"):
-                            # generated_value=fake.random_int(min=13, max=14)
-                            generated_value=""
-                            for _ in range(max_length):  # Generate 9 more random digits
-                                 digit = random.randint(0, 9)
-                                 generated_value += str(digit)
-                                 if(len(generated_value)==max_length):
-                                     break
-                        else:
-                            generated_value=faker_function()
-                        # print("generated_value= "+generated_value)
-                        print(datatype)
-                        if(datatype.lower().__contains__("varchar")):
-                            generated_value=str(generated_value)
-                            if max_length is not None and len(generated_value) > max_length:
-                                generated_value = generated_value[:max_length-1]
-                            # print("aftergeneratedvalue= "+generated_value)
-                                generated_data.append(f"'{generated_value}'")
-                            else:
-                                generated_data.append(f"'{generated_value}'")
-                        else:
-                            generated_data.append(f"'{generated_value}'")
+#                     closest_match, score = process.extractOne(head, dir(fake))
+#                     if hasattr(fake, closest_match):
+#                         faker_function = getattr(fake, closest_match)
+#                         if(head=="uuid4"):
+#                             generated_value=fake.random_int(min=1, max=999)
+#                         elif(head=="random"):
+#                             generated_value = random.randint(18, 80)
+#                         elif(head=="status"):
+#                             generated_value = random.randint(1,6)
+#                         elif(head=="date"):
+#                             print('date')
+#                             generated_value=fake.date()
+#                             print('date:'+generated_value)
+#                         elif(head=="datetime"):
+#                             generated_value=fake.date_time()
+#                         elif(head=="mobile"):
+#                             # generated_value=fake.random_int(min=13, max=14)
+#                             generated_value=""
+#                             for _ in range(max_length):  # Generate 9 more random digits
+#                                  digit = random.randint(0, 9)
+#                                  generated_value += str(digit)
+#                                  if(len(generated_value)==max_length):
+#                                      break
+#                         else:
+#                             generated_value=faker_function()
+#                         # print("generated_value= "+generated_value)
+#                         print(datatype)
+#                         if(datatype.lower().__contains__("varchar")):
+#                             generated_value=str(generated_value)
+#                             if max_length is not None and len(generated_value) > max_length:
+#                                 generated_value = generated_value[:max_length-1]
+#                             # print("aftergeneratedvalue= "+generated_value)
+#                                 generated_data.append(f"'{generated_value}'")
+#                             else:
+#                                 generated_data.append(f"'{generated_value}'")
+#                         else:
+#                             generated_data.append(f"'{generated_value}'")
                             
                         
                         
                         
             
-                    # record[field_name] = generated_value
-                    else:
-                        generated_data.append("''")
-                print(generated_data)
-                columns_string = ', '.join(column_names)
-                insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES ({', '.join(generated_data)})"
-                print(insert_query)
-                cursor.execute(insert_query)
-                print("inserted")
-                connection.commit()
+#                     # record[field_name] = generated_value
+#                     else:
+#                         generated_data.append("''")
+#                 print(generated_data)
+#                 columns_string = ', '.join(column_names)
+#                 insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES ({', '.join(generated_data)})"
+#                 print(insert_query)
+#                 cursor.execute(insert_query)
+#                 print("inserted")
+#                 connection.commit()
 
-            cursor.close()
+#             cursor.close()
 
-    except Error as e:
-        print("Error:", e)
+#     except Error as e:
+#         print("Error:", e)
 
-    finally:
-        if connection.is_connected():
-            connection.close()
+#     finally:
+#         if connection.is_connected():
+#             connection.close()
 
-    return {"message": "Data inserted into MySQL database"}
+#     return {"message": "Data inserted into MySQL database"}
 
 
 @app.get("/tablecheck")
@@ -508,3 +502,20 @@ async def tablecheck(tablenames:str):
     
 
     return table_exists
+
+
+@app.post("/generatedatatest/")
+async def read_item(body: BodyRequest):
+    connection = create_connection()
+    if not connection:
+        return {"message": "Unable to connect to the database"}
+
+    try:
+        tablename = body.tablename
+        tablename = check_word_count(tablename)  # You can add your logic for tablename here
+        responsemessage=create_table(connection, tablename, body.columns)
+        responsemessage=insert_data(connection, tablename, body.columns, body.count)
+        return responsemessage
+    finally:
+        if connection.is_connected():
+            connection.close()
