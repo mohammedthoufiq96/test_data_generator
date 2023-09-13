@@ -126,6 +126,9 @@ def insert_data(connection, tablename, headers_input, count):
                     head = "status"
                 elif "joining" in head.lower():
                     head = "joining"
+                elif(head.lower().__contains__("currentdate") or head.lower().__contains("currenttime") or head.lower().__contains("createddate")):
+                
+                    head="currentdate"
 
                 closest_match, _ = process.extractOne(head, dir(fake))
                 faker_function = getattr(fake, closest_match)
@@ -143,6 +146,11 @@ def insert_data(connection, tablename, headers_input, count):
                     generated_value = fake.date_time()
                 elif head == "mobile":
                     generated_value = "".join([str(random.randint(0, 9)) for _ in range(max_length-3)])
+                elif head=="currentdate":
+                    from datetime import date
+
+                    today = date.today()
+                    generated_value=today
                 else:
                     generated_value = faker_function()
 
