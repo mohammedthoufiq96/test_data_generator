@@ -49,6 +49,7 @@ def insert_data(connection, tablename, headers_input, count):
         cursor = connection.cursor()
         column_names=[]
         column_headers=[]
+        querydata=''
        
         # print("yres")
         # print(headers_input)
@@ -66,6 +67,7 @@ def insert_data(connection, tablename, headers_input, count):
         # print(column_headers)
         # print(column_names)
         for _ in range(count):
+           
             generated_data = []
             # column_names = []
             # print("test")
@@ -172,13 +174,22 @@ def insert_data(connection, tablename, headers_input, count):
                     generated_data.append(f"'{generated_value}'")
                 # i=i+1
                 # column_names.append(head)
+            
+            final_data=', '.join(generated_data)
+            if querydata=="":
+                querydata="("+final_data+")"
+            else:
+                querydata=querydata+",("+final_data+")"
+        
+          
+
 
             columns_string = ', '.join(column_names)
             # print(generated_data)
-            insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES ({', '.join(generated_data)})"
-            print(insert_query)
-            cursor.execute(insert_query)
-            connection.commit()
+        insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES {querydata}"
+        print(insert_query)
+        cursor.execute(insert_query)
+        connection.commit()
 
         cursor.close()
         return "Data inserted Successfully"
@@ -186,5 +197,7 @@ def insert_data(connection, tablename, headers_input, count):
         print("Error inserting data:", e)
         return "Error inserting data"
        
+
+# def newgeneratedata():
 
 

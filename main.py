@@ -37,8 +37,6 @@ class BodyRequest(BaseModel):
 # Generate and write data to CSV
 @app.post("/generatedata/",response_class=HTMLResponse)
 async def read_item(body: BodyRequest):
-    # headers = ['Name', 'Email', 'Phone', 'Address']
-    print("api_in")
     headers_input = body.columns
     count=body.count
     tablename=body.tablename
@@ -46,61 +44,17 @@ async def read_item(body: BodyRequest):
     textformat=body.textformat
     
     generated_csv_content = [",".join(headers_input)]
-    # with open(tablename+'.csv', 'w', newline='') as csvfile:
-    #     csvwriter = csv.writer(csvfile)
-    #     csvwriter.writerow(headers_input)
 
     filename = tablename + '.'+body.filetype.lower() # Change the extension based on your desired file format
-    datawithtype= headers_input  
-    # column_definitions=data
-    # print(column_definitions.__len__)
-    # Data you want to write
-    print(datawithtype)
+    datawithtype= headers_input 
     i=1
     data=[]
     for column_def in datawithtype:
-        # print(column_def)
         if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date")):
-
-    # Split each column definition by space to separate the data type and size
-            # print("columndef:"+column_def)
             parts = column_def.split(" ")
-
-            # print(parts)
-    
-    # Take only the first part (the column name) and append it to the new list
             column_name = parts[0]
-            # print("datatype:"+parts[1])
             datatype=parts[1]
             data.append(column_name)
-            max_length = None
-            if datatype.lower().__contains__("varchar"):
-                    if column_def.lower().__contains__("("):
-                        max_length = int(parts[1].split("(")[1].rstrip(")"))
-                        # print("stringlength")
-                        # print(max_length)
-                        minlength=max_length-1
-                        maxcount = (10 **max_length)-1
-                        mincount=10 **minlength
-                    else:
-                        maxcount=100
-                        mincount=1
-
-            elif datatype.lower().__contains__("int"):
-                    if column_def.lower().__contains__("("):
-                        max_length = int(parts[1].split("(")[1].rstrip(")"))
-                        # print("intlength")
-                        # print(max_length)
-                        minlength=max_length-1
-                        maxcount = (10 **max_length)-1
-                        mincount=10 **minlength
-                    else:
-                        maxcount=100
-                        mincount=1
-        else:
-            column_name=datawithtype
-        i=i+1
-    # print(data)
     with open(filename, 'w', newline='') as file:
         if filename.endswith('.csv'):
             import csv
@@ -113,19 +67,8 @@ async def read_item(body: BodyRequest):
                  csv_writer.writerow(data)
             elif textformat.lower().__contains__("tsv"):
                 file.write('\t'.join(map(str, data)) + '\n')
-
-        # For plain text files, you can simply write the data directly
-            # file.write('\t'.join(data))  # Example: Tab-separated values
         elif filename.endswith('.json'):
             import json
-            # json_data = [{data: row[i] for i in range(len(data))}
-            # for row in data[1:]
-            # ]
-            # json_string = json.dumps(json_data, indent=2)
-            # file.write(json_string)
-
-            # json.dump(data, file)
-    # Add more conditions for other file formats as needed
         else:
             raise ValueError(f"Unsupported file format: {filename}")
 
@@ -133,6 +76,37 @@ async def read_item(body: BodyRequest):
         for _ in range(count):
             generated_data=[]
             for head in headers_input:
+                if(head.lower().__contains__("varchar") or head.lower().__contains__("int") or head.lower().__contains__("date")):
+                    parts = head.split(" ")
+                    column_name = parts[0]
+                    datatype=parts[1]
+                    data.append(column_name)
+                    max_length = None
+                    if datatype.lower().__contains__("varchar"):
+                        if head.lower().__contains__("("):
+                            max_length = int(parts[1].split("(")[1].rstrip(")"))
+                            # print("stringlength")
+                            # print(max_length)
+                            minlength=max_length-1
+                            maxcount = (10 **max_length)-1
+                            mincount=10 **minlength
+                        else:
+                            maxcount=100
+                            mincount=1
+
+                    elif datatype.lower().__contains__("int"):
+                        if head.lower().__contains__("("):
+                            max_length = int(parts[1].split("(")[1].rstrip(")"))
+                            print("intlength"+head)
+                            print(max_length)
+                            minlength=max_length-1
+                            maxcount = (10 **max_length)-1
+                            mincount=10 **minlength
+                        else:
+                            maxcount=100
+                            mincount=1
+                else:
+                    column_name=datawithtype
                 # print("--------------"+head)
                 if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or head.lower().__contains__("phone")):
                     head="phonenumber"
@@ -147,7 +121,10 @@ async def read_item(body: BodyRequest):
                 elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                     head="date of birth"
                 elif(head.lower().__contains__('age') or head.lower().__contains__('number') or head.lower().__contains__('no') or head.lower().__contains__('num') or head.lower().__contains__("id")):
-                    head = "randomage"
+                    if head.lower().__contains__('age'):
+                        head = "randomage"
+                    else:
+                        head="random"
                     
                 elif(head.lower().__contains__('payment_mode')):
                     head="credit_card_provider"
@@ -172,6 +149,7 @@ async def read_item(body: BodyRequest):
                         # print(num)
                         generated_data.append(num)
                     elif(head=="random"):
+                            print("maxcount"+str(maxcount))
                             age = random.randint(mincount, maxcount)
                             generated_data.append(age)
                     elif(head=="randomage"):
@@ -206,38 +184,20 @@ async def read_item(body: BodyRequest):
                 # print(generated_data)
                 else:
                     generated_data.append("")
-            # print(generated_data)
-            # finaldata=headers_input.append(generated_data)
-            # print(finaldata)
             final_data=[]
             final_data.extend(generated_data)
             if filename.endswith('.csv'):
                 csvwriter.writerow(generated_data)
             elif filename.endswith('.txt'):
-                # print("generting data")
-                # print("textformat:"+textformat)
                 if(textformat.lower().__contains__("csv")):
-                #  csv_writer = csv.writer(file)
                  csv_writer.writerow(generated_data)
                 elif textformat=="tsv":
-                # tsv_writer = csv.writer(file, delimiter='\t')
-                # tsv_writer.writerows(generated_data)  
-                    # print("generting data")
-                    # print(generated_data)
                     file.write('\t'.join(map(str, generated_data)) + '\n')
-                # file.write('\t'.join(generated_data))
             elif filename.endswith('.json'):
                   result_dict = {key: value for key, value in zip(data, generated_data)}
-
                   json.dump(result_dict, file)
-                #   data.append()
-            
-        # print(final_data)
         row = generated_data
-        # print(row)
         script_path = os.path.dirname(os.path.abspath(__file__))
-        
-        # print(script_path)
         file_path = os.path.join(script_path, filename)
 
         return file_path
