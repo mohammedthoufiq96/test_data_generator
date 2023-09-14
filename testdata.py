@@ -55,12 +55,13 @@ def insert_data(connection, tablename, headers_input, count):
         # print(headers_input)
         for input_string in headers_input:
     # Split the input string by comma
+            input_string.strip()
             column_definitions = input_string.split(',')
             column_headers=column_definitions
     
     # Extract column names from each definition and add them to the list
             for definition in column_definitions:
-                column_name = definition.split()[0]
+                column_name = definition.split()[0].strip()
                 column_names.append(column_name)
                 
                 
@@ -79,14 +80,15 @@ def insert_data(connection, tablename, headers_input, count):
             i=0
             # headers_input = headers_input.split(',')
             for head in headers_input:
+                head=head.strip()
                 # print("--------------"+head)
                 
                 if  head.__contains__("varchar") or head.__contains__("int"):
                     # print("---------------in-----------------------")
                     parts = head.split(" ")
                 # print(parts)
-                    head_part = parts[0]
-                    datatype = parts[1]
+                    head_part = parts[0].strip()
+                    datatype = parts[1].strip()
                     max_length = None
                     if datatype.lower().__contains__("varchar"):
                         max_length = int(parts[1].split("(")[1].rstrip(")"))
@@ -139,6 +141,7 @@ def insert_data(connection, tablename, headers_input, count):
                     head="currentdate"
                 elif(head.lower().__contains__("float") or head.lower().__contains__('double') or head.lower().__contains__('decimal')):
                     head = "random_decimal"
+                
 
                 closest_match, _ = process.extractOne(head, dir(fake))
                 faker_function = getattr(fake, closest_match)
@@ -167,7 +170,7 @@ def insert_data(connection, tablename, headers_input, count):
                 else:
                     generated_value = faker_function()
 
-                if datatype.lower().__contains__( "varchar"):
+                if datatype.lower().__contains__("varchar"):
                     generated_value = str(generated_value)
                     if max_length is not None and len(generated_value) > max_length:
                         generated_value = generated_value[:max_length - 1]

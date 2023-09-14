@@ -50,11 +50,13 @@ async def read_item(body: BodyRequest):
     i=1
     data=[]
     for column_def in datawithtype:
+        column_def=column_def.strip()
         if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date")):
             parts = column_def.split(" ")
-            column_name = parts[0]
-            datatype=parts[1]
+            column_name = parts[0].strip()
+            datatype=parts[1].strip()
             data.append(column_name)
+            
     with open(filename, 'w', newline='') as file:
         if filename.endswith('.csv'):
             import csv
@@ -66,7 +68,8 @@ async def read_item(body: BodyRequest):
                  csv_writer = csv.writer(file)
                  csv_writer.writerow(data)
             elif textformat.lower().__contains__("tsv"):
-                file.write('\t'.join(map(str, data)) + '\n')
+                tsv_writer = csv.writer(file, delimiter='\t')
+                tsv_writer.writerow(data)
         elif filename.endswith('.json'):
             import json
         else:
@@ -192,7 +195,7 @@ async def read_item(body: BodyRequest):
                 if(textformat.lower().__contains__("csv")):
                  csv_writer.writerow(generated_data)
                 elif textformat=="tsv":
-                    file.write('\t'.join(map(str, generated_data)) + '\n')
+                    tsv_writer.writerow(generated_data)
             elif filename.endswith('.json'):
                   result_dict = {key: value for key, value in zip(data, generated_data)}
                   json.dump(result_dict, file)
