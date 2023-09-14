@@ -98,6 +98,8 @@ def insert_data(connection, tablename, headers_input, count):
                     elif datatype.lower().__contains__("int"):
                         if head.lower().__contains__("("):
                             max_length = int(parts[1].split("(")[1].rstrip(")"))
+                            if max_length>9:
+                                max_length=8
                         # print("intlength")
                         # print(max_length)
                             minlength=max_length-1
