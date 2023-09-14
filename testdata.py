@@ -163,7 +163,7 @@ def insert_data(connection, tablename, headers_input, count):
                 else:
                     generated_value = faker_function()
 
-                if head.lower().__contains__( "varchar"):
+                if datatype.lower().__contains__( "varchar"):
                     generated_value = str(generated_value)
                     if max_length is not None and len(generated_value) > max_length:
                         generated_value = generated_value[:max_length - 1]

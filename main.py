@@ -139,9 +139,11 @@ async def read_item(body: BodyRequest):
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
                     head="name"
                 elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") or head.lower().__contains__("int")):
-                    head="uuid4"
+                   
                     if(head.lower().__contains__("int")):
                         head="random"
+                    else:
+                        head="uuid4"
                 elif(head.lower()=="dob" or head.lower().__contains__("birth") or head.lower().__contains__("dob")):
                     head="date of birth"
                 elif(head.lower().__contains__('age') or head.lower().__contains__('number') or head.lower().__contains__('no') or head.lower().__contains__('num') or head.lower().__contains__("id")):
