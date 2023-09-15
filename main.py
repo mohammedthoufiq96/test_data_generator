@@ -102,8 +102,6 @@ async def read_item(body: BodyRequest):
                     elif datatype.lower().__contains__("int"):
                         if head.lower().__contains__("("):
                             max_length = int(parts[1].split("(")[1].rstrip(")"))
-                            print("intlength"+head)
-                            print(max_length)
                             minlength=max_length-1
                             maxcount = (10 **max_length)-1
                             mincount=10 **minlength
@@ -113,7 +111,6 @@ async def read_item(body: BodyRequest):
                 else:
                     maxcount=100
                     mincount=1
-                    print(datawithtype)
                     column_name=datawithtype
                 # print("--------------"+head)
                 if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or head.lower().__contains__("phone")):
