@@ -56,6 +56,8 @@ async def read_item(body: BodyRequest):
             column_name = parts[0].strip()
             datatype=parts[1].strip()
             data.append(column_name)
+        else:
+            data.append(column_def)
             
     with open(filename, 'w', newline='') as file:
         if filename.endswith('.csv'):
@@ -109,12 +111,22 @@ async def read_item(body: BodyRequest):
                             maxcount=100
                             mincount=1
                 else:
+                    maxcount=100
+                    mincount=1
+                    print(datawithtype)
                     column_name=datawithtype
                 # print("--------------"+head)
                 if(head.lower()=="mobilenumber" or head.lower().__contains__("mobile") or head.lower().__contains__("mob") or head.lower().__contains__("phone")):
                     head="phonenumber"
                 elif(head.lower()=="name" or head.lower().__contains__("name")):
-                    head="name"
+                    if(head.lower().__contains__("first")):
+                        head="firstname"
+                    elif(head.lower().__contains__("middle")):
+                        head="middlename"
+                    elif(head.lower().__contains__("last")):
+                        head="lastname"
+                    else:
+                        head="name"
                 elif(head.lower().__contains__("payment_id") or head.lower().__contains__("paymentid") or head.lower().__contains__("int")):
                    
                     if(head.lower().__contains__("int")):
@@ -152,7 +164,7 @@ async def read_item(body: BodyRequest):
                         # print(num)
                         generated_data.append(num)
                     elif(head=="random"):
-                            print("maxcount"+str(maxcount))
+                            # print("maxcount"+str(maxcount))
                             age = random.randint(mincount, maxcount)
                             generated_data.append(age)
                     elif(head=="randomage"):
