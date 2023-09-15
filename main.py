@@ -51,10 +51,11 @@ async def read_item(body: BodyRequest):
     data=[]
     for column_def in datawithtype:
         column_def=column_def.strip()
-        if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date")):
+        if(column_def.lower().__contains__("varchar") or column_def.lower().__contains__("int") or column_def.lower().__contains__("date") or column_def.lower().__contains__("datetime")):
             parts = column_def.split(" ")
             column_name = parts[0].strip()
-            datatype=parts[1].strip()
+            if(len(parts)>=2):
+                datatype=parts[1].strip()
             data.append(column_name)
         else:
             data.append(column_def)
@@ -84,7 +85,8 @@ async def read_item(body: BodyRequest):
                 if(head.lower().__contains__("varchar") or head.lower().__contains__("int") or head.lower().__contains__("date")):
                     parts = head.split(" ")
                     column_name = parts[0]
-                    datatype=parts[1]
+                    if(len(parts)>=2):
+                        datatype=parts[1].strip()
                     data.append(column_name)
                     max_length = None
                     if datatype.lower().__contains__("varchar"):
