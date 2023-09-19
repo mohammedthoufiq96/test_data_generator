@@ -50,6 +50,7 @@ def insert_data(connection, tablename, headers_input, count):
         column_names=[]
         column_headers=[]
         querydata=''
+        headwithtime=False
        
         # print("yres")
         # print(headers_input)
@@ -126,29 +127,43 @@ def insert_data(connection, tablename, headers_input, count):
                      else:
                         head = "uuid4"
                    
-                elif "dob" in head.lower() or "birth" in head.lower() or "dob" in head.lower():
+                elif "dob" in head.lower() or "birth" in head.lower() or "dob" in head.lower() or head.lower().__contains__('date') and "current" not in head.lower():
+                    if head.lower().__contains__('time'):
+                        headwithtime=True
                     head = "date of birth"
+
                 elif "age" in head.lower() or "s_no" in head.lower() or "no" in head.lower() or "number" in head.lower():
-                    head = "random"
+                    if head.lower().__contains__("int"):
+                        head = "random"
+                    elif head.lower().__contains__("age"):
+                        head="age"
+                    else:
+                        head = "uuid4"
                 elif "payment_mode" in head.lower():
                     head = "credit_card_provider"
                 elif "status" in head.lower():
                     head = "status"
                 elif "joining" in head.lower():
-                    head = "joining"
+                    if "time" in head.lower():
+                        head = "date of birth"
+                        headwithtime=True
+                    else:
+                        head="date of birth"
                 elif(head.lower().__contains__("currentdate") or head.lower().__contains__("currenttime") or head.lower().__contains__("createddate")):
-                
                     head="currentdate"
                 elif(head.lower().__contains__("float") or head.lower().__contains__('double') or head.lower().__contains__('decimal')):
                     head = "random_decimal"
+                elif(head.lower().__contains__("gender")):
+                    head = "gender"
                 
-
+                # print(head)
                 closest_match, _ = process.extractOne(head, dir(fake))
                 faker_function = getattr(fake, closest_match)
                 generated_value = None
 
                 if head == "uuid4":
-                    generated_value = fake.random_int(min=mincount, max=maxcount)
+                   import secrets
+                   generated_value=secrets.token_hex(max_length-1)
                 elif head == "random":
                     generated_value = random.randint(mincount, maxcount)
                 elif head == "status":
@@ -156,7 +171,12 @@ def insert_data(connection, tablename, headers_input, count):
                 elif head == "date":
                     generated_value = fake.date()
                 elif head == "datetime":
-                    generated_value = fake.date_time()
+                    join = fake.date()
+                    hour = random.randint(0, 23)
+                    minute = random.randint(0, 59)
+                    second = random.randint(0, 59)
+                    generated_value = join+" "+f"{hour:02d}:{minute:02d}:{second:02d}"
+                    # print(generated_value)
                 elif head == "mobile":
                     generated_value = "".join([str(random.randint(0, 9)) for _ in range(max_length-3)])
                 elif head=="currentdate":
@@ -165,10 +185,21 @@ def insert_data(connection, tablename, headers_input, count):
                     today =  datetime.datetime.now()
                     formatted_datetime = today.strftime('%Y-%m-%d %H:%M:%S')
                     generated_value=formatted_datetime
+
                 elif head=="random_decimal":
                     generated_value=round(random.uniform(1,10), 2)
+                elif head=="age":
+                    generated_value = random.randint(1, 99)
                 else:
                     generated_value = faker_function()
+                
+                if(headwithtime==True):
+                    hour = random.randint(0, 23)
+                    minute = random.randint(0, 59)
+                    second = random.randint(0, 59)
+                    generated_value = generated_value+" "+f"{hour:02d}:{minute:02d}:{second:02d}"
+                    headwithtime=False
+
 
                 if datatype.lower().__contains__("varchar"):
                     generated_value = str(generated_value)
@@ -192,14 +223,14 @@ def insert_data(connection, tablename, headers_input, count):
             columns_string = ', '.join(column_names)
             # print(generated_data)
         insert_query = f"INSERT INTO {tablename} ({columns_string}) VALUES {querydata}"
-        print(insert_query)
+        # print(insert_query)
         cursor.execute(insert_query)
         connection.commit()
 
         cursor.close()
         return "Data inserted Successfully"
     except Error as e:
-        print("Error inserting data:", e)
+        # print("Error inserting data:", e)
         return "Error inserting data"
        
 

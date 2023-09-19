@@ -150,7 +150,7 @@ async def read_item(body: BodyRequest):
                     if(head.lower().__contains__("time")):
                         head="datetime"
                     else:
-                        head="joining"
+                        head="date of birth"
                
                 
                 closest_match, score = process.extractOne(head, dir(fake))
