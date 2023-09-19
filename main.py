@@ -137,6 +137,8 @@ async def read_item(body: BodyRequest):
                 elif(head.lower().__contains__('age') or head.lower().__contains__('number') or head.lower().__contains__('no') or head.lower().__contains__('num') or head.lower().__contains__("id")):
                     if head.lower().__contains__('age'):
                         head = "randomage"
+                    elif head.lower().__contains__('varchar'):
+                        head="uuid4"
                     else:
                         head="random"
                     
@@ -191,6 +193,12 @@ async def read_item(body: BodyRequest):
 
                         fake_time = join+" "+f"{hour:02d}:{minute:02d}:{second:02d}"
                         generated_data.append(fake_time)
+                    elif(head=="uuid4"):
+                        import secrets
+                        generated_value=secrets.token_hex(max_length)
+                        if(len(generated_value)>max_length):
+                            generated_value=generated_value[:max_length]
+                        generated_data.append(generated_value)
 
                         
                     else:
@@ -198,6 +206,7 @@ async def read_item(body: BodyRequest):
                 # print(generated_data)
                 else:
                     generated_data.append("")
+                
             final_data=[]
             final_data.extend(generated_data)
             if filename.endswith('.csv'):
@@ -472,7 +481,7 @@ async def tablecheck(tablenames:str):
             password="Jagan@1997",
             database="test_data_generation"
         )
-        print(connection)
+        # print(connection)
         tablename = tablenames
         cursor = connection.cursor()
 
