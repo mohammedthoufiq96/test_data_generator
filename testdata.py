@@ -59,6 +59,7 @@ def insert_data(connection, tablename, headers_input, count):
             input_string.strip()
             column_definitions = input_string.split(',')
             column_headers=column_definitions
+            # print(column_definitions)
     
     # Extract column names from each definition and add them to the list
             for definition in column_definitions:
@@ -183,7 +184,7 @@ def insert_data(connection, tablename, headers_input, count):
                     generated_value = join+" "+f"{hour:02d}:{minute:02d}:{second:02d}"
                     # print(generated_value)
                 elif head == "mobile":
-                    generated_value = "".join([str(random.randint(0, 9)) for _ in range(max_length-3)])
+                    generated_value = "".join([str(random.randint(0, 9)) for _ in range(9)])
                 elif head=="currentdate":
                     from datetime import date
 
@@ -195,6 +196,8 @@ def insert_data(connection, tablename, headers_input, count):
                     generated_value=round(random.uniform(1,10), 2)
                 elif head=="age":
                     generated_value = random.randint(1, 99)
+                elif head=="phonenumber":
+                    generated_value=  fake.phone_number()
                 else:
                     generated_value = faker_function()
                 
