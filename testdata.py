@@ -122,7 +122,7 @@ def insert_data(connection, tablename, headers_input, count):
                 # print(datatype)
                 # print(head)
                 # Handle data generation
-                if head.lower().__contains__("mobilenumber") or head.lower().__contains__("mobile") or  head.lower().__contains__("phone") :
+                if head.lower().__contains__("mobilenumber") or head.lower().__contains__("mobile") or  head.lower().__contains__("phone") or head.lower().__contains__("mob") or head.lower().__contains__("ph") :
                     if datatype.lower().__contains__("int"):
                         head= "mobile"
                     else:
