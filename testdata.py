@@ -111,10 +111,16 @@ def insert_data(connection, tablename, headers_input, count):
                         else:
                             maxcount=100
                             mincount=1
+                else:
+                    max_length=100
+                    minlength=max_length-1
+                    maxcount = (10 **max_length)-1
+                    mincount=10 **minlength
+                    datatype='date'
                 
 
                 # print(datatype)
-
+                # print(head)
                 # Handle data generation
                 if head.lower().__contains__("mobilenumber") or head.lower().__contains__("mobile") or  head.lower().__contains__("phone") :
                     if datatype.lower().__contains__("int"):
@@ -131,7 +137,8 @@ def insert_data(connection, tablename, headers_input, count):
                     if head.lower().__contains__('time'):
                         headwithtime=True
                     head = "date of birth"
-
+                elif(head.lower().__contains__("currentdate") or head.lower().__contains__("currenttime") or head.lower().__contains__("createddate")):
+                    head="currentdate"
                 elif "age" in head.lower() or "s_no" in head.lower() or "no" in head.lower() or "number" in head.lower():
                     if head.lower().__contains__("int"):
                         head = "random"
@@ -149,8 +156,6 @@ def insert_data(connection, tablename, headers_input, count):
                         headwithtime=True
                     else:
                         head="date of birth"
-                elif(head.lower().__contains__("currentdate") or head.lower().__contains__("currenttime") or head.lower().__contains__("createddate")):
-                    head="currentdate"
                 elif(head.lower().__contains__("float") or head.lower().__contains__('double') or head.lower().__contains__('decimal')):
                     head = "random_decimal"
                 elif(head.lower().__contains__("gender")):
